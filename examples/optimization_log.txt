@@ -1,0 +1,54 @@
+Problem
+  Name                   :                 
+  Objective sense        : minimize        
+  Type                   : CONIC (conic optimization problem)
+  Constraints            : 53986           
+  Affine conic cons.     : 82 (1230 rows)
+  Disjunctive cons.      : 0               
+  Cones                  : 0               
+  Scalar variables       : 3592            
+  Matrix variables       : 0               
+  Integer variables      : 107             
+
+Optimizer started.
+Mixed integer optimizer started.
+Threads used: 24
+Presolve started.
+Presolve terminated. Time = 0.51, probing time =  0.09
+Presolved problem: 2154 variables, 47469 constraints, 551741 non-zeros
+Presolved problem: 0 general integer, 14 binary, 2140 continuous
+Presolved problem: 82 cones
+Clique table size: 8
+Symmetry factor  : 0.00 (detection time = 0.10)
+BRANCHES RELAXS   ACT_NDS  DEPTH    BEST_INT_OBJ         BEST_RELAX_OBJ       REL_GAP(%)  TIME  
+0        1        1        0        NA                   1.2571946828e+00     NA          1.0   
+0        1        1        0        1.8237613707e+00     1.2571946828e+00     31.07       1.3   
+Cut generation started.
+0        1        1        0        1.8237613707e+00     1.2571946821e+00     31.07       1.8   
+Cut generation terminated. Time = 0.12
+An optimal solution satisfying the relative gap tolerance of 1.00e-02(%) has been located.
+The relative gap is 0.00e+00(%).
+An optimal solution satisfying the absolute gap tolerance of 0.00e+00 has been located.
+The absolute gap is 0.00e+00.
+
+Objective of best integer solution : 1.823761370741e+00      
+Best objective bound               : 1.823761370741e+00      
+Initial feasible solution objective: Undefined
+Construct solution objective       : Not employed
+User objective cut value           : Not employed
+Number of cuts generated           : 0
+Number of branches                 : 5
+Number of relaxations solved       : 9
+Number of interior point iterations: 358
+Number of simplex iterations       : 0
+Time spend presolving the root     : 0.51
+Time spend optimizing the root     : 0.86
+Mixed integer optimizer terminated. Time: 5.71
+
+Optimizer terminated. Time: 5.76    
+
+
+Integer solution solution summary
+  Problem status  : PRIMAL_FEASIBLE
+  Solution status : INTEGER_OPTIMAL
+  Primal.  obj: 1.8237613707e+00    nrm: 6e+00    Viol.  con: 2e-10    var: 0e+00    acc: 2e-09    itg: 0e+00  
