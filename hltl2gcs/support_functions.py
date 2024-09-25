@@ -4,6 +4,8 @@ from matplotlib.collections import PatchCollection
 import matplotlib.pyplot as plt
 import numpy as np 
 import pickle
+import time
+import ipdb
 def create_convexSet(diagram, plant, configuration):
     diagram_context = diagram.CreateDefaultContext()
     plant_context = diagram.GetMutableSubsystemContext(plant, diagram_context)
@@ -66,12 +68,11 @@ def AddShape(plant, shape, name, mass=1, mu=1, color=[0.5, 0.5, 0.9, 1.0]):
 
     return instance
     
-def construct_labeled_convex_region(diagram, plant, joint_label):
+def construct_labeled_convex_region(diagram, plant, joint_label,path):
     diagram_context = diagram.CreateDefaultContext()
     for name, configuration in joint_label.items():
         plant_context = diagram.GetMutableSubsystemContext(plant, diagram_context)
         plant.SetPositions(plant_context, configuration)
-
         iris_options = IrisOptions()
         iris_options.require_sample_point_is_contained = True
         iris_options.iteration_limit = 1
@@ -83,10 +84,10 @@ def construct_labeled_convex_region(diagram, plant, joint_label):
         hpoly = IrisInConfigurationSpace(plant, plant_context, iris_options)
         print(f"Generated a collision-free polytope around {name} with {len(hpoly.b())} faces in {time.time()-start_time} seconds")
 
-        with open(f"Iris_regions/two_robot_case1/{name}.pkl", "wb") as f:
+        with open(f"Iris_regions/{path}/{name}.pkl", "wb") as f:
             pickle.dump(hpoly,f)
 
-def construct_connected_convex_region_RRT(diagram, plant, joint_label,combinations_list ):
+def construct_connected_convex_region_RRT(diagram, plant, joint_label, combinations_list, path):
     for item in combinations_list:
         q_start = joint_label[item[0]]
         q_goal= joint_label[item[1]]
@@ -94,7 +95,7 @@ def construct_connected_convex_region_RRT(diagram, plant, joint_label,combinatio
         path = rrt_planning(iiwa_problem, 1000, 0.05)
         hpoly_list = generate_ConvexRegion(diagram, plant, q_start,q_goal,path)
         name = f"{item[0]}_connect_{item[1]}"
-        with open(f"Iris_regions/two_robot_case1/{name}.pkl", "wb") as f:
+        with open(f"Iris_regions/{path}/{name}.pkl", "wb") as f:
             pickle.dump(hpoly_list,f)
 
 def findIndex(data, target):
@@ -118,26 +119,26 @@ def RefineRegion(convex_region, q, robot_num, key_robot_index):
     split_q = np.array_split(q, robot_num, axis=0)
 
     r,c = convex_region.A().shape
-    if key_robot_index == 0:
+    if key_robot_index == 0:        # robot 1 pick case
         m1 = np.hstack((np.eye(7), np.zeros((7, 7))))
         m2 = -m1
         A_left_pick = np.hstack((np.zeros(split_A[0].shape), split_A[1]))
         A_left_pick = np.vstack((A_left_pick,m1,m2))    
         b_left_pick = convex_region.b() - split_A[0] @ split_q[key_robot_index].transpose()
         b_left_pick = np.vstack((np.reshape(b_left_pick, (r, 1)),np.reshape(split_q[key_robot_index], (7, 1)),-np.reshape(split_q[key_robot_index], (7, 1))))
-        
-    elif key_robot_index == 1:
+        refined_convex_region = HPolyhedron(A_left_pick,b_left_pick)
+    elif key_robot_index == 1:      # robot 2 pick case
         m1 = np.hstack((np.zeros((7, 7)), np.eye(7)))
         m2 = -m1
         A_left_pick = np.hstack((split_A[0],np.zeros(split_A[1].shape)))
         A_left_pick = np.vstack((A_left_pick,m1,m2))   
         b_left_pick = convex_region.b() - split_A[1] @ split_q[key_robot_index].transpose()
         b_left_pick = np.vstack((np.reshape(b_left_pick, (r, 1)),np.reshape(split_q[key_robot_index], (7, 1)),-np.reshape(split_q[key_robot_index], (7, 1))))
-        
+        refined_convex_region = HPolyhedron(A_left_pick,b_left_pick)
+    elif key_robot_index == [0,1]:  # handover case
+        refined_convex_region = convex_region
     else:
         raise ValueError("Input must be [1, 0] or [0, 1]")
-    
-    refined_convex_region = HPolyhedron(A_left_pick,b_left_pick)
     
     return refined_convex_region
 
@@ -153,6 +154,7 @@ def show_robot(diagram, plant, visualizer, robot_num, object_num, object_init_po
     current_moving_object = 0
     visualizer.StartRecording()
     visualizer_context = visualizer.GetMyContextFromRoot(diagram_context)
+    
     for trajectory in path:
         v = vertex_array[count]
         for t in np.append(np.arange(trajectory.start_time(), trajectory.end_time(), time_step),trajectory.end_time()):

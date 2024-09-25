@@ -48,7 +48,6 @@ else:
         plant.GetFrameByName("block1", block1),
         RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[-0.25, 0.5, 0.1]),
     )
-block1_tool_frame = plant.GetFrameByName("block1", block1)
 
 # add frame for visulzation
 iiwa_attach_frame = dict()
@@ -68,10 +67,6 @@ plant.WeldFrames(
     plant.GetFrameByName("floor", floor),
     RigidTransform(RotationMatrix(),[0, 0.75, -0.05]),
 )
-iiwa_1 = plant.GetModelInstanceByName("iiwa_1")
-iiwa_2 = plant.GetModelInstanceByName("iiwa_2")
-iiwa_1_tool_frame = plant.GetFrameByName("iiwa_link_ee", iiwa_1)
-iiwa_2_tool_frame = plant.GetFrameByName("iiwa_link_ee", iiwa_2)
 
 # build plant and diagram
 plant.Finalize()
@@ -130,15 +125,15 @@ else:
     specs.get_task_specification(task=args.task, case=args.case)
 
 # Construct labeled and connected convex sets using IRIS. This can be quite slow, so we do it offline and save the results. 
-perform_iris_label = False
-if perform_iris_label:
-    construct_labeled_convex_region(diagram, plant, joint_label)
+perform_iris_label = True
+if perform_iris_label and SHOW_ROBOT == False:
+    construct_labeled_convex_region(diagram, plant, joint_label, 'two_robot_case1')
 
 perform_iris_connect = False
 keys_list = list(joint_label.keys())
 combinations_list = list(combinations(keys_list, 2))
-if perform_iris_connect:
-    construct_connected_convex_region_RRT(diagram, plant, joint_label, combinations_list)
+if perform_iris_connect and SHOW_ROBOT == False:
+    construct_connected_convex_region_RRT(diagram, plant, joint_label, combinations_list, 'two_robot_case1')
 
 # Load and refined to labeled convex region
 S_iris = dict()

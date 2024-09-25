@@ -216,25 +216,17 @@ class TransitionSystem(DirectedGraph):
         
         return connection_dict
         
-    def AddEdgesFromIntersections(self):
-        """
-        Add transitions between all partitions that have some non-empty
-        intersection. 
-        """
-        for v1 in self.vertices:
-            for v2 in self.vertices:
-                r1 = self.partitions[v1]
-                r2 = self.partitions[v2]
-                if r1.IntersectsWith(r2) and (v1 != v2):
-                    self.AddEdge(v1, v2)
-        # ipdb.set_trace()          
-        # print("ts vertices:",self.vertices)
-        # print("ts edges:",self.edges)
-        # edge_label = []
-        # for u, v in self.edgreversees:
-        #     u_label = self.labels[u]
-        #     v_label = self.labels[v]
-        #     edge_label.append(f'{u_label}->{v_label}')
+    # def AddEdgesFromIntersections(self):
+    #     """
+    #     Add transitions between all partitions that have some non-empty
+    #     intersection. 
+    #     """
+    #     for v1 in self.vertices:
+    #         for v2 in self.vertices:
+    #             r1 = self.partitions[v1]
+    #             r2 = self.partitions[v2]
+    #             if r1.IntersectsWith(r2) and (v1 != v2):
+    #                 self.AddEdge(v1, v2)
 
     def AddEdgewithConnectionRRT(self, source_vertex, target_vertex):
         """
@@ -479,813 +471,813 @@ class TransitionSystem(DirectedGraph):
         # ipdb.set_trace()
         return connect_dict
         
-    def AddEdgewithConnection(self, source_vertex, target_vertex):
-        """
-        Add a transition between two partitions (aka states aka vertices).
+    # def AddEdgewithConnection(self, source_vertex, target_vertex):
+    #     """
+    #     Add a transition between two partitions (aka states aka vertices).
 
-        Args:
-            source_vertex: index of the starting vertex
-            target_vertex: index of the ending vertex
-        """
-        assert source_vertex in self.vertices
-        assert target_vertex in self.vertices
+    #     Args:
+    #         source_vertex: index of the starting vertex
+    #         target_vertex: index of the ending vertex
+    #     """
+    #     assert source_vertex in self.vertices
+    #     assert target_vertex in self.vertices
         
-        connect_dict= dict()
-        conect_label = []
-        l1 = self.labels[source_vertex]
-        l2 = self.labels[target_vertex]
-        connect_key = (str(l1),str(l2))
+    #     connect_dict= dict()
+    #     conect_label = []
+    #     l1 = self.labels[source_vertex]
+    #     l2 = self.labels[target_vertex]
+    #     connect_key = (str(l1),str(l2))
 
-        source_index = self.findConnectRegion(l1)
-        target_index = self.findConnectRegion(l2)
+    #     source_index = self.findConnectRegion(l1)
+    #     target_index = self.findConnectRegion(l2)
         
-        # create a connection old
-        if USING_NEW_RULE == False:
-            vertex_index = self.v_idx
-            self.vertices.append(vertex_index)
-            self.partitions[vertex_index] = self.init_vertices_set[0]
-            self.labels[vertex_index] = f'{self.init_labels[0]}{self.num_connection}'
-            self.v_idx += 1
-            self.num_connection += 1
-            conect_label.append(self.labels[vertex_index])
-            # ipdb.set_trace()
+    #     # create a connection old
+    #     if USING_NEW_RULE == False:
+    #         vertex_index = self.v_idx
+    #         self.vertices.append(vertex_index)
+    #         self.partitions[vertex_index] = self.init_vertices_set[0]
+    #         self.labels[vertex_index] = f'{self.init_labels[0]}{self.num_connection}'
+    #         self.v_idx += 1
+    #         self.num_connection += 1
+    #         conect_label.append(self.labels[vertex_index])
+    #         # ipdb.set_trace()
             
-            edge = (source_vertex, vertex_index)
-            assert edge not in self.edges, "edge already exists!"
-            self.edges.append(edge)
+    #         edge = (source_vertex, vertex_index)
+    #         assert edge not in self.edges, "edge already exists!"
+    #         self.edges.append(edge)
             
-            edge = (vertex_index, target_vertex)
-            assert edge not in self.edges, "edge already exists!"
-            self.edges.append(edge)
+    #         edge = (vertex_index, target_vertex)
+    #         assert edge not in self.edges, "edge already exists!"
+    #         self.edges.append(edge)
         
-        else:
-            connection_vertex_index = self.v_idx
-            self.vertices.append(connection_vertex_index)
-            self.partitions[connection_vertex_index] = self.target_connection_vertices_set[source_index]
-            self.labels[connection_vertex_index] = f'{self.target_connection_labels[source_index]}{self.num_connection}'
-            self.v_idx += 1
-            self.num_connection += 1
-            conect_label.append(self.labels[connection_vertex_index])
+    #     else:
+    #         connection_vertex_index = self.v_idx
+    #         self.vertices.append(connection_vertex_index)
+    #         self.partitions[connection_vertex_index] = self.target_connection_vertices_set[source_index]
+    #         self.labels[connection_vertex_index] = f'{self.target_connection_labels[source_index]}{self.num_connection}'
+    #         self.v_idx += 1
+    #         self.num_connection += 1
+    #         conect_label.append(self.labels[connection_vertex_index])
             
-            # connect with edges
-            edge = (source_vertex, connection_vertex_index)
-            assert edge not in self.edges, "edge already exists!"
-            self.edges.append(edge)
+    #         # connect with edges
+    #         edge = (source_vertex, connection_vertex_index)
+    #         assert edge not in self.edges, "edge already exists!"
+    #         self.edges.append(edge)
             
-            # if [[""], [""],[""],["target_4_drop_object_1"]] == l2:
-            #     vertex_index = self.v_idx
-            #     self.vertices.append(vertex_index)
-            #     self.partitions[vertex_index] = self.test_connection_vertices_set[0]
-            #     self.labels[vertex_index] = f'{self.test_connection_labels[0]}{self.num_connection}'
-            #     self.v_idx += 1
-            #     self.num_connection += 1
-            # else:
+    #         # if [[""], [""],[""],["target_4_drop_object_1"]] == l2:
+    #         #     vertex_index = self.v_idx
+    #         #     self.vertices.append(vertex_index)
+    #         #     self.partitions[vertex_index] = self.test_connection_vertices_set[0]
+    #         #     self.labels[vertex_index] = f'{self.test_connection_labels[0]}{self.num_connection}'
+    #         #     self.v_idx += 1
+    #         #     self.num_connection += 1
+    #         # else:
 
-            # connection_vertex_index = self.v_idx
-            # self.vertices.append(connection_vertex_index)
-            # self.partitions[connection_vertex_index] = self.init_vertices_set[0]
-            # self.labels[connection_vertex_index] = f'{self.init_labels[0]}{self.num_connection}'
-            # self.v_idx += 1
-            # self.num_connection += 1
+    #         # connection_vertex_index = self.v_idx
+    #         # self.vertices.append(connection_vertex_index)
+    #         # self.partitions[connection_vertex_index] = self.init_vertices_set[0]
+    #         # self.labels[connection_vertex_index] = f'{self.init_labels[0]}{self.num_connection}'
+    #         # self.v_idx += 1
+    #         # self.num_connection += 1
         
-            # edge = (connection_vertex_index-1, connection_vertex_index)
-            # assert edge not in self.edges, "edge already exists!"
-            # self.edges.append(edge)
+    #         # edge = (connection_vertex_index-1, connection_vertex_index)
+    #         # assert edge not in self.edges, "edge already exists!"
+    #         # self.edges.append(edge)
             
-            connection_vertex_index = self.v_idx
-            self.vertices.append(connection_vertex_index)
-            self.partitions[connection_vertex_index] = self.target_connection_vertices_set[target_index]
-            self.labels[connection_vertex_index] = f'{self.target_connection_labels[target_index]}{self.num_connection}'
-            self.v_idx += 1
-            self.num_connection += 1
-            conect_label.append(self.labels[connection_vertex_index])
+    #         connection_vertex_index = self.v_idx
+    #         self.vertices.append(connection_vertex_index)
+    #         self.partitions[connection_vertex_index] = self.target_connection_vertices_set[target_index]
+    #         self.labels[connection_vertex_index] = f'{self.target_connection_labels[target_index]}{self.num_connection}'
+    #         self.v_idx += 1
+    #         self.num_connection += 1
+    #         conect_label.append(self.labels[connection_vertex_index])
             
-            # connect with edges
-            edge = (connection_vertex_index-1, connection_vertex_index)
-            assert edge not in self.edges, "edge already exists!"
-            self.edges.append(edge)
+    #         # connect with edges
+    #         edge = (connection_vertex_index-1, connection_vertex_index)
+    #         assert edge not in self.edges, "edge already exists!"
+    #         self.edges.append(edge)
             
-            self.init_connect_vertice.append(connection_vertex_index)
-            edge = (connection_vertex_index, target_vertex)
-            assert edge not in self.edges, "edge already exists!"
-            self.edges.append(edge)
+    #         self.init_connect_vertice.append(connection_vertex_index)
+    #         edge = (connection_vertex_index, target_vertex)
+    #         assert edge not in self.edges, "edge already exists!"
+    #         self.edges.append(edge)
             
-        connect_dict[connect_key] = conect_label
+    #     connect_dict[connect_key] = conect_label
             
-        return connect_dict
+    #     return connect_dict
               
-    def AddEdgewithHandover(self, source_vertex, target_vertex , reverse = False):
-        """
-        Add a transition between two partitions (aka states aka vertices).
+    # def AddEdgewithHandover(self, source_vertex, target_vertex , reverse = False):
+    #     """
+    #     Add a transition between two partitions (aka states aka vertices).
 
-        Args:
-            source_vertex: index of the starting vertex
-            target_vertex: index of the ending vertex
-        """
-        assert source_vertex in self.vertices
-        assert target_vertex in self.vertices
-        # ipdb.set_trace()
-        if self.num_robot == 2:
-            # used for spot example:
-            connection_vertex_index = self.v_idx
-            self.vertices.append(connection_vertex_index)
-            self.partitions[connection_vertex_index] = self.init_vertices_set[1]
-            self.labels[connection_vertex_index] = f'{self.init_labels[1]}{self.num_connection}'
-            self.v_idx += 1
-            self.num_connection += 1
+    #     Args:
+    #         source_vertex: index of the starting vertex
+    #         target_vertex: index of the ending vertex
+    #     """
+    #     assert source_vertex in self.vertices
+    #     assert target_vertex in self.vertices
+    #     # ipdb.set_trace()
+    #     if self.num_robot == 2:
+    #         # used for spot example:
+    #         connection_vertex_index = self.v_idx
+    #         self.vertices.append(connection_vertex_index)
+    #         self.partitions[connection_vertex_index] = self.init_vertices_set[1]
+    #         self.labels[connection_vertex_index] = f'{self.init_labels[1]}{self.num_connection}'
+    #         self.v_idx += 1
+    #         self.num_connection += 1
             
-            # connect with edges
-            edge = (source_vertex, connection_vertex_index)
-            assert edge not in self.edges, "edge already exists!"
-            self.edges.append(edge)
+    #         # connect with edges
+    #         edge = (source_vertex, connection_vertex_index)
+    #         assert edge not in self.edges, "edge already exists!"
+    #         self.edges.append(edge)
             
-            connection_vertex_index = self.v_idx
-            self.vertices.append(connection_vertex_index)
-            self.partitions[connection_vertex_index] = self.init_vertices_set[2]
-            self.labels[connection_vertex_index] = f'{self.init_labels[2]}{self.num_connection}'
-            self.v_idx += 1
-            self.num_connection += 1
+    #         connection_vertex_index = self.v_idx
+    #         self.vertices.append(connection_vertex_index)
+    #         self.partitions[connection_vertex_index] = self.init_vertices_set[2]
+    #         self.labels[connection_vertex_index] = f'{self.init_labels[2]}{self.num_connection}'
+    #         self.v_idx += 1
+    #         self.num_connection += 1
             
-            # connect with edges
-            edge = (connection_vertex_index - 1, connection_vertex_index)
-            assert edge not in self.edges, "edge already exists!"
-            self.edges.append(edge)
+    #         # connect with edges
+    #         edge = (connection_vertex_index - 1, connection_vertex_index)
+    #         assert edge not in self.edges, "edge already exists!"
+    #         self.edges.append(edge)
             
-            # create a handover
-            handover_vertex_index = self.v_idx
-            self.vertices.append(handover_vertex_index)
-            self.partitions[handover_vertex_index] = self.handover_vertices_set[0]
-            self.labels[handover_vertex_index] = f'{self.handover_labels[0]}{self.num_handover}'
-            self.v_idx += 1
-            self.num_handover += 1
+    #         # create a handover
+    #         handover_vertex_index = self.v_idx
+    #         self.vertices.append(handover_vertex_index)
+    #         self.partitions[handover_vertex_index] = self.handover_vertices_set[0]
+    #         self.labels[handover_vertex_index] = f'{self.handover_labels[0]}{self.num_handover}'
+    #         self.v_idx += 1
+    #         self.num_handover += 1
             
-            # connect with edges
-            edge = (connection_vertex_index, handover_vertex_index)
-            assert edge not in self.edges, "edge already exists!"
-            self.edges.append(edge)
+    #         # connect with edges
+    #         edge = (connection_vertex_index, handover_vertex_index)
+    #         assert edge not in self.edges, "edge already exists!"
+    #         self.edges.append(edge)
             
-            connection_vertex_index = self.v_idx
-            self.vertices.append(connection_vertex_index)
-            self.partitions[connection_vertex_index] = self.init_vertices_set[2]
-            self.labels[connection_vertex_index] = f'{self.init_labels[2]}{self.num_connection}'
-            self.v_idx += 1
-            self.num_connection += 1
+    #         connection_vertex_index = self.v_idx
+    #         self.vertices.append(connection_vertex_index)
+    #         self.partitions[connection_vertex_index] = self.init_vertices_set[2]
+    #         self.labels[connection_vertex_index] = f'{self.init_labels[2]}{self.num_connection}'
+    #         self.v_idx += 1
+    #         self.num_connection += 1
             
-            # connect with edges
-            edge = (handover_vertex_index, connection_vertex_index)
-            assert edge not in self.edges, "edge already exists!"
-            self.edges.append(edge)
+    #         # connect with edges
+    #         edge = (handover_vertex_index, connection_vertex_index)
+    #         assert edge not in self.edges, "edge already exists!"
+    #         self.edges.append(edge)
             
-            # create a connection
-            connection_vertex_index = self.v_idx
-            self.vertices.append(connection_vertex_index)
-            self.partitions[connection_vertex_index] = self.init_vertices_set[3]
-            self.labels[connection_vertex_index] = f'{self.init_labels[3]}{self.num_connection}'
-            self.v_idx += 1
-            self.num_connection += 1
+    #         # create a connection
+    #         connection_vertex_index = self.v_idx
+    #         self.vertices.append(connection_vertex_index)
+    #         self.partitions[connection_vertex_index] = self.init_vertices_set[3]
+    #         self.labels[connection_vertex_index] = f'{self.init_labels[3]}{self.num_connection}'
+    #         self.v_idx += 1
+    #         self.num_connection += 1
             
-            # connect with edges
-            edge = (connection_vertex_index - 1, connection_vertex_index)
-            assert edge not in self.edges, "edge already exists!"
-            self.edges.append(edge)
+    #         # connect with edges
+    #         edge = (connection_vertex_index - 1, connection_vertex_index)
+    #         assert edge not in self.edges, "edge already exists!"
+    #         self.edges.append(edge)
             
-            edge = (connection_vertex_index, target_vertex)
-            assert edge not in self.edges, "edge already exists!"
-            self.edges.append(edge)
+    #         edge = (connection_vertex_index, target_vertex)
+    #         assert edge not in self.edges, "edge already exists!"
+    #         self.edges.append(edge)
             
             
-            # used for two robots example:
-            # create a connection
-            # connection_vertex_index = self.v_idx
-            # self.vertices.append(connection_vertex_index)
-            # self.partitions[connection_vertex_index] = self.init_vertices_set[0]
-            # self.labels[connection_vertex_index] = f'{self.init_labels[0]}{self.num_connection}'
-            # self.v_idx += 1
-            # self.num_connection += 1
+    #         # used for two robots example:
+    #         # create a connection
+    #         # connection_vertex_index = self.v_idx
+    #         # self.vertices.append(connection_vertex_index)
+    #         # self.partitions[connection_vertex_index] = self.init_vertices_set[0]
+    #         # self.labels[connection_vertex_index] = f'{self.init_labels[0]}{self.num_connection}'
+    #         # self.v_idx += 1
+    #         # self.num_connection += 1
             
-            # # connect with edges
-            # edge = (source_vertex, connection_vertex_index)
-            # assert edge not in self.edges, "edge already exists!"
-            # self.edges.append(edge)
+    #         # # connect with edges
+    #         # edge = (source_vertex, connection_vertex_index)
+    #         # assert edge not in self.edges, "edge already exists!"
+    #         # self.edges.append(edge)
             
-            # connection_vertex_index = self.v_idx
-            # self.vertices.append(connection_vertex_index)
-            # self.partitions[connection_vertex_index] = self.init_vertices_set[1]
-            # self.labels[connection_vertex_index] = f'{self.init_labels[1]}{self.num_connection}'
-            # self.v_idx += 1
-            # self.num_connection += 1
+    #         # connection_vertex_index = self.v_idx
+    #         # self.vertices.append(connection_vertex_index)
+    #         # self.partitions[connection_vertex_index] = self.init_vertices_set[1]
+    #         # self.labels[connection_vertex_index] = f'{self.init_labels[1]}{self.num_connection}'
+    #         # self.v_idx += 1
+    #         # self.num_connection += 1
             
-            # # connect with edges
-            # edge = (connection_vertex_index - 1, connection_vertex_index)
-            # assert edge not in self.edges, "edge already exists!"
-            # self.edges.append(edge)
+    #         # # connect with edges
+    #         # edge = (connection_vertex_index - 1, connection_vertex_index)
+    #         # assert edge not in self.edges, "edge already exists!"
+    #         # self.edges.append(edge)
             
-            # # create a handover
-            # handover_vertex_index = self.v_idx
-            # self.vertices.append(handover_vertex_index)
-            # self.partitions[handover_vertex_index] = self.handover_vertices_set[0]
-            # self.labels[handover_vertex_index] = f'{self.handover_labels[0]}{self.num_handover}'
-            # self.v_idx += 1
-            # self.num_handover += 1
+    #         # # create a handover
+    #         # handover_vertex_index = self.v_idx
+    #         # self.vertices.append(handover_vertex_index)
+    #         # self.partitions[handover_vertex_index] = self.handover_vertices_set[0]
+    #         # self.labels[handover_vertex_index] = f'{self.handover_labels[0]}{self.num_handover}'
+    #         # self.v_idx += 1
+    #         # self.num_handover += 1
             
-            # # connect with edges
-            # edge = (connection_vertex_index, handover_vertex_index)
-            # assert edge not in self.edges, "edge already exists!"
-            # self.edges.append(edge)
+    #         # # connect with edges
+    #         # edge = (connection_vertex_index, handover_vertex_index)
+    #         # assert edge not in self.edges, "edge already exists!"
+    #         # self.edges.append(edge)
             
-            # connection_vertex_index = self.v_idx
-            # self.vertices.append(connection_vertex_index)
-            # self.partitions[connection_vertex_index] = self.init_vertices_set[1]
-            # self.labels[connection_vertex_index] = f'{self.init_labels[1]}{self.num_connection}'
-            # self.v_idx += 1
-            # self.num_connection += 1
+    #         # connection_vertex_index = self.v_idx
+    #         # self.vertices.append(connection_vertex_index)
+    #         # self.partitions[connection_vertex_index] = self.init_vertices_set[1]
+    #         # self.labels[connection_vertex_index] = f'{self.init_labels[1]}{self.num_connection}'
+    #         # self.v_idx += 1
+    #         # self.num_connection += 1
             
-            # # connect with edges
-            # edge = (handover_vertex_index, connection_vertex_index)
-            # assert edge not in self.edges, "edge already exists!"
-            # self.edges.append(edge)
+    #         # # connect with edges
+    #         # edge = (handover_vertex_index, connection_vertex_index)
+    #         # assert edge not in self.edges, "edge already exists!"
+    #         # self.edges.append(edge)
             
-            # # create a connection
-            # connection_vertex_index = self.v_idx
-            # self.vertices.append(connection_vertex_index)
-            # self.partitions[connection_vertex_index] = self.init_vertices_set[0]
-            # self.labels[connection_vertex_index] = f'{self.init_labels[0]}{self.num_connection}'
-            # self.v_idx += 1
-            # self.num_connection += 1
+    #         # # create a connection
+    #         # connection_vertex_index = self.v_idx
+    #         # self.vertices.append(connection_vertex_index)
+    #         # self.partitions[connection_vertex_index] = self.init_vertices_set[0]
+    #         # self.labels[connection_vertex_index] = f'{self.init_labels[0]}{self.num_connection}'
+    #         # self.v_idx += 1
+    #         # self.num_connection += 1
             
-            # # connect with edges
-            # edge = (connection_vertex_index - 1, connection_vertex_index)
-            # assert edge not in self.edges, "edge already exists!"
-            # self.edges.append(edge)
+    #         # # connect with edges
+    #         # edge = (connection_vertex_index - 1, connection_vertex_index)
+    #         # assert edge not in self.edges, "edge already exists!"
+    #         # self.edges.append(edge)
             
-            # edge = (connection_vertex_index, target_vertex)
-            # assert edge not in self.edges, "edge already exists!"
-            # self.edges.append(edge)
+    #         # edge = (connection_vertex_index, target_vertex)
+    #         # assert edge not in self.edges, "edge already exists!"
+    #         # self.edges.append(edge)
             
-        elif self.num_robot == 3:
-            if self.reverse == False:
-                self.reverse = True 
-                # create a connection 1
-                connection_vertex_index = self.v_idx
-                self.vertices.append(connection_vertex_index)
-                self.partitions[connection_vertex_index] = self.init_vertices_set[0]
-                self.labels[connection_vertex_index] = f'{self.init_labels[0]}{self.num_connection}'
-                self.v_idx += 1
-                self.num_connection += 1
+    #     elif self.num_robot == 3:
+    #         if self.reverse == False:
+    #             self.reverse = True 
+    #             # create a connection 1
+    #             connection_vertex_index = self.v_idx
+    #             self.vertices.append(connection_vertex_index)
+    #             self.partitions[connection_vertex_index] = self.init_vertices_set[0]
+    #             self.labels[connection_vertex_index] = f'{self.init_labels[0]}{self.num_connection}'
+    #             self.v_idx += 1
+    #             self.num_connection += 1
 
-                # connect with edges
-                edge = (source_vertex, connection_vertex_index)
-                assert edge not in self.edges, "edge already exists!"
-                self.edges.append(edge)
+    #             # connect with edges
+    #             edge = (source_vertex, connection_vertex_index)
+    #             assert edge not in self.edges, "edge already exists!"
+    #             self.edges.append(edge)
                 
-                # create a connection 2
-                connection_vertex_index = self.v_idx
-                self.vertices.append(connection_vertex_index)
-                self.partitions[connection_vertex_index] = self.init_vertices_set[1]
-                self.labels[connection_vertex_index] = f'{self.init_labels[1]}{self.num_connection}'
-                self.v_idx += 1
-                self.num_connection += 1
+    #             # create a connection 2
+    #             connection_vertex_index = self.v_idx
+    #             self.vertices.append(connection_vertex_index)
+    #             self.partitions[connection_vertex_index] = self.init_vertices_set[1]
+    #             self.labels[connection_vertex_index] = f'{self.init_labels[1]}{self.num_connection}'
+    #             self.v_idx += 1
+    #             self.num_connection += 1
                 
-                # connect with edges
-                edge = (connection_vertex_index-1, connection_vertex_index)
-                assert edge not in self.edges, "edge already exists!"
-                self.edges.append(edge)
+    #             # connect with edges
+    #             edge = (connection_vertex_index-1, connection_vertex_index)
+    #             assert edge not in self.edges, "edge already exists!"
+    #             self.edges.append(edge)
                 
-                # create a handovergit checkout -- ltlgcs/transition_system.py
-                handover_vertex_index = self.v_idx
-                self.vertices.append(handover_vertex_index)
-                self.partitions[handover_vertex_index] = self.handover_vertices_set[source_vertex]
-                self.labels[handover_vertex_index] = f'{self.handover_labels[0]}{self.num_handover}'
-                self.v_idx += 1
-                self.num_handover += 1
+    #             # create a handovergit checkout -- ltlgcs/transition_system.py
+    #             handover_vertex_index = self.v_idx
+    #             self.vertices.append(handover_vertex_index)
+    #             self.partitions[handover_vertex_index] = self.handover_vertices_set[source_vertex]
+    #             self.labels[handover_vertex_index] = f'{self.handover_labels[0]}{self.num_handover}'
+    #             self.v_idx += 1
+    #             self.num_handover += 1
                 
-                # connect with edges
-                edge = (connection_vertex_index, handover_vertex_index)
-                assert edge not in self.edges, "edge already exists!"
-                self.edges.append(edge)
+    #             # connect with edges
+    #             edge = (connection_vertex_index, handover_vertex_index)
+    #             assert edge not in self.edges, "edge already exists!"
+    #             self.edges.append(edge)
                 
-                # create a connection 1
-                connection_vertex_index = self.v_idx
-                self.vertices.append(connection_vertex_index)
-                self.partitions[connection_vertex_index] = self.init_vertices_set[1]
-                self.labels[connection_vertex_index] = f'{self.init_labels[1]}{self.num_connection}'
-                self.v_idx += 1
-                self.num_connection += 1
+    #             # create a connection 1
+    #             connection_vertex_index = self.v_idx
+    #             self.vertices.append(connection_vertex_index)
+    #             self.partitions[connection_vertex_index] = self.init_vertices_set[1]
+    #             self.labels[connection_vertex_index] = f'{self.init_labels[1]}{self.num_connection}'
+    #             self.v_idx += 1
+    #             self.num_connection += 1
                 
-                # connect with edges
-                edge = (handover_vertex_index, connection_vertex_index)
-                assert edge not in self.edges, "edge already exists!"
-                self.edges.append(edge)
+    #             # connect with edges
+    #             edge = (handover_vertex_index, connection_vertex_index)
+    #             assert edge not in self.edges, "edge already exists!"
+    #             self.edges.append(edge)
                 
-                # create a connection 2
-                connection_vertex_index = self.v_idx
-                self.vertices.append(connection_vertex_index)
-                self.partitions[connection_vertex_index] = self.init_vertices_set[2]
-                self.labels[connection_vertex_index] = f'{self.init_labels[2]}{self.num_connection}'
-                self.v_idx += 1
-                self.num_connection += 1
+    #             # create a connection 2
+    #             connection_vertex_index = self.v_idx
+    #             self.vertices.append(connection_vertex_index)
+    #             self.partitions[connection_vertex_index] = self.init_vertices_set[2]
+    #             self.labels[connection_vertex_index] = f'{self.init_labels[2]}{self.num_connection}'
+    #             self.v_idx += 1
+    #             self.num_connection += 1
                 
-                # connect with edges
-                edge = (connection_vertex_index-1, connection_vertex_index)
-                assert edge not in self.edges, "edge already exists!"
-                self.edges.append(edge)
+    #             # connect with edges
+    #             edge = (connection_vertex_index-1, connection_vertex_index)
+    #             assert edge not in self.edges, "edge already exists!"
+    #             self.edges.append(edge)
                 
-                # create a handover
-                handover_vertex_index = self.v_idx
-                self.vertices.append(handover_vertex_index)
-                self.partitions[handover_vertex_index] = self.handover_vertices_set[target_vertex]
-                self.labels[handover_vertex_index] = f'{self.handover_labels[1]}{self.num_handover}'
-                self.v_idx += 1
-                self.num_handover += 1
+    #             # create a handover
+    #             handover_vertex_index = self.v_idx
+    #             self.vertices.append(handover_vertex_index)
+    #             self.partitions[handover_vertex_index] = self.handover_vertices_set[target_vertex]
+    #             self.labels[handover_vertex_index] = f'{self.handover_labels[1]}{self.num_handover}'
+    #             self.v_idx += 1
+    #             self.num_handover += 1
                 
-                # connect with edges
-                edge = (connection_vertex_index, handover_vertex_index)
-                assert edge not in self.edges, "edge already exists!"
-                self.edges.append(edge)
+    #             # connect with edges
+    #             edge = (connection_vertex_index, handover_vertex_index)
+    #             assert edge not in self.edges, "edge already exists!"
+    #             self.edges.append(edge)
                 
-                # create a connection 1
-                connection_vertex_index = self.v_idx
-                self.vertices.append(connection_vertex_index)
-                self.partitions[connection_vertex_index] = self.init_vertices_set[2]
-                self.labels[connection_vertex_index] = f'{self.init_labels[2]}{self.num_connection}'
-                self.v_idx += 1
-                self.num_connection += 1
+    #             # create a connection 1
+    #             connection_vertex_index = self.v_idx
+    #             self.vertices.append(connection_vertex_index)
+    #             self.partitions[connection_vertex_index] = self.init_vertices_set[2]
+    #             self.labels[connection_vertex_index] = f'{self.init_labels[2]}{self.num_connection}'
+    #             self.v_idx += 1
+    #             self.num_connection += 1
                 
-                # connect with edges
-                edge = (handover_vertex_index, connection_vertex_index)
-                assert edge not in self.edges, "edge already exists!"
-                self.edges.append(edge)
+    #             # connect with edges
+    #             edge = (handover_vertex_index, connection_vertex_index)
+    #             assert edge not in self.edges, "edge already exists!"
+    #             self.edges.append(edge)
                 
-                # create a connection 2
-                connection_vertex_index = self.v_idx
-                self.vertices.append(connection_vertex_index)
-                self.partitions[connection_vertex_index] = self.init_vertices_set[0]
-                self.labels[connection_vertex_index] = f'{self.init_labels[0]}{self.num_connection}'
-                self.v_idx += 1
-                self.num_connection += 1
+    #             # create a connection 2
+    #             connection_vertex_index = self.v_idx
+    #             self.vertices.append(connection_vertex_index)
+    #             self.partitions[connection_vertex_index] = self.init_vertices_set[0]
+    #             self.labels[connection_vertex_index] = f'{self.init_labels[0]}{self.num_connection}'
+    #             self.v_idx += 1
+    #             self.num_connection += 1
                 
-                # connect with edges
-                edge = (connection_vertex_index-1, connection_vertex_index)
-                assert edge not in self.edges, "edge already exists!"
-                self.edges.append(edge)
+    #             # connect with edges
+    #             edge = (connection_vertex_index-1, connection_vertex_index)
+    #             assert edge not in self.edges, "edge already exists!"
+    #             self.edges.append(edge)
                 
-                edge = (connection_vertex_index, target_vertex)
-                assert edge not in self.edges, "edge already exists!"
-                self.edges.append(edge) 
-            else:
-                self.reverse = False
-                # create a connection 1
-                connection_vertex_index = self.v_idx
-                self.vertices.append(connection_vertex_index)
-                self.partitions[connection_vertex_index] = self.init_vertices_set[0]
-                self.labels[connection_vertex_index] = f'{self.init_labels[0]}{self.num_connection}'
-                self.v_idx += 1
-                self.num_connection += 1
+    #             edge = (connection_vertex_index, target_vertex)
+    #             assert edge not in self.edges, "edge already exists!"
+    #             self.edges.append(edge) 
+    #         else:
+    #             self.reverse = False
+    #             # create a connection 1
+    #             connection_vertex_index = self.v_idx
+    #             self.vertices.append(connection_vertex_index)
+    #             self.partitions[connection_vertex_index] = self.init_vertices_set[0]
+    #             self.labels[connection_vertex_index] = f'{self.init_labels[0]}{self.num_connection}'
+    #             self.v_idx += 1
+    #             self.num_connection += 1
                 
-                # connect with edges
-                edge = (source_vertex, connection_vertex_index)
-                assert edge not in self.edges, "edge already exists!"
-                self.edges.append(edge)
+    #             # connect with edges
+    #             edge = (source_vertex, connection_vertex_index)
+    #             assert edge not in self.edges, "edge already exists!"
+    #             self.edges.append(edge)
                 
-                # create a connection 2
-                connection_vertex_index = self.v_idx
-                self.vertices.append(connection_vertex_index)
-                self.partitions[connection_vertex_index] = self.init_vertices_set[2]
-                self.labels[connection_vertex_index] = f'{self.init_labels[2]}{self.num_connection}'
-                self.v_idx += 1
-                self.num_connection += 1
+    #             # create a connection 2
+    #             connection_vertex_index = self.v_idx
+    #             self.vertices.append(connection_vertex_index)
+    #             self.partitions[connection_vertex_index] = self.init_vertices_set[2]
+    #             self.labels[connection_vertex_index] = f'{self.init_labels[2]}{self.num_connection}'
+    #             self.v_idx += 1
+    #             self.num_connection += 1
                 
-                # connect with edges
-                edge = (connection_vertex_index-1, connection_vertex_index)
-                assert edge not in self.edges, "edge already exists!"
-                self.edges.append(edge)
+    #             # connect with edges
+    #             edge = (connection_vertex_index-1, connection_vertex_index)
+    #             assert edge not in self.edges, "edge already exists!"
+    #             self.edges.append(edge)
                 
-                # create a handover
-                handover_vertex_index = self.v_idx
-                self.vertices.append(handover_vertex_index)
-                self.partitions[handover_vertex_index] = self.handover_vertices_set[target_vertex]
-                self.labels[handover_vertex_index] = f'{self.handover_labels[1]}{self.num_handover}'
-                self.v_idx += 1
-                self.num_handover += 1
+    #             # create a handover
+    #             handover_vertex_index = self.v_idx
+    #             self.vertices.append(handover_vertex_index)
+    #             self.partitions[handover_vertex_index] = self.handover_vertices_set[target_vertex]
+    #             self.labels[handover_vertex_index] = f'{self.handover_labels[1]}{self.num_handover}'
+    #             self.v_idx += 1
+    #             self.num_handover += 1
                 
-                # connect with edges
-                edge = (connection_vertex_index, handover_vertex_index)
-                assert edge not in self.edges, "edge already exists!"
-                self.edges.append(edge)
+    #             # connect with edges
+    #             edge = (connection_vertex_index, handover_vertex_index)
+    #             assert edge not in self.edges, "edge already exists!"
+    #             self.edges.append(edge)
                 
-                # create a connection 1
-                connection_vertex_index = self.v_idx
-                self.vertices.append(connection_vertex_index)
-                self.partitions[connection_vertex_index] = self.init_vertices_set[2]
-                self.labels[connection_vertex_index] = f'{self.init_labels[2]}{self.num_connection}'
-                self.v_idx += 1
-                self.num_connection += 1
+    #             # create a connection 1
+    #             connection_vertex_index = self.v_idx
+    #             self.vertices.append(connection_vertex_index)
+    #             self.partitions[connection_vertex_index] = self.init_vertices_set[2]
+    #             self.labels[connection_vertex_index] = f'{self.init_labels[2]}{self.num_connection}'
+    #             self.v_idx += 1
+    #             self.num_connection += 1
                 
-                # connect with edges
-                edge = (handover_vertex_index, connection_vertex_index)
-                assert edge not in self.edges, "edge already exists!"
-                self.edges.append(edge)
+    #             # connect with edges
+    #             edge = (handover_vertex_index, connection_vertex_index)
+    #             assert edge not in self.edges, "edge already exists!"
+    #             self.edges.append(edge)
                 
-                # create a connection 2
-                connection_vertex_index = self.v_idx
-                self.vertices.append(connection_vertex_index)
-                self.partitions[connection_vertex_index] = self.init_vertices_set[1]
-                self.labels[connection_vertex_index] = f'{self.init_labels[1]}{self.num_connection}'
-                self.v_idx += 1
-                self.num_connection += 1
+    #             # create a connection 2
+    #             connection_vertex_index = self.v_idx
+    #             self.vertices.append(connection_vertex_index)
+    #             self.partitions[connection_vertex_index] = self.init_vertices_set[1]
+    #             self.labels[connection_vertex_index] = f'{self.init_labels[1]}{self.num_connection}'
+    #             self.v_idx += 1
+    #             self.num_connection += 1
                 
-                # connect with edges
-                edge = (connection_vertex_index-1, connection_vertex_index)
-                assert edge not in self.edges, "edge already exists!"
-                self.edges.append(edge)
+    #             # connect with edges
+    #             edge = (connection_vertex_index-1, connection_vertex_index)
+    #             assert edge not in self.edges, "edge already exists!"
+    #             self.edges.append(edge)
                 
-                # create a handover
-                handover_vertex_index = self.v_idx
-                self.vertices.append(handover_vertex_index)
-                self.partitions[handover_vertex_index] = self.handover_vertices_set[source_vertex]
-                self.labels[handover_vertex_index] = f'{self.handover_labels[0]}{self.num_handover}'
-                self.v_idx += 1
-                self.num_handover += 1
+    #             # create a handover
+    #             handover_vertex_index = self.v_idx
+    #             self.vertices.append(handover_vertex_index)
+    #             self.partitions[handover_vertex_index] = self.handover_vertices_set[source_vertex]
+    #             self.labels[handover_vertex_index] = f'{self.handover_labels[0]}{self.num_handover}'
+    #             self.v_idx += 1
+    #             self.num_handover += 1
                 
-                # connect with edges
-                edge = (connection_vertex_index, handover_vertex_index)
-                assert edge not in self.edges, "edge already exists!"
-                self.edges.append(edge)
+    #             # connect with edges
+    #             edge = (connection_vertex_index, handover_vertex_index)
+    #             assert edge not in self.edges, "edge already exists!"
+    #             self.edges.append(edge)
                 
-                # create a connection 1
-                connection_vertex_index = self.v_idx
-                self.vertices.append(connection_vertex_index)
-                self.partitions[connection_vertex_index] = self.init_vertices_set[1]
-                self.labels[connection_vertex_index] = f'{self.init_labels[1]}{self.num_connection}'
-                self.v_idx += 1
-                self.num_connection += 1
+    #             # create a connection 1
+    #             connection_vertex_index = self.v_idx
+    #             self.vertices.append(connection_vertex_index)
+    #             self.partitions[connection_vertex_index] = self.init_vertices_set[1]
+    #             self.labels[connection_vertex_index] = f'{self.init_labels[1]}{self.num_connection}'
+    #             self.v_idx += 1
+    #             self.num_connection += 1
                 
-                # connect with edges
-                edge = (handover_vertex_index, connection_vertex_index)
-                assert edge not in self.edges, "edge already exists!"
-                self.edges.append(edge)
+    #             # connect with edges
+    #             edge = (handover_vertex_index, connection_vertex_index)
+    #             assert edge not in self.edges, "edge already exists!"
+    #             self.edges.append(edge)
                 
-                # create a connection 2
-                connection_vertex_index = self.v_idx
-                self.vertices.append(connection_vertex_index)
-                self.partitions[connection_vertex_index] = self.init_vertices_set[0]
-                self.labels[connection_vertex_index] = f'{self.init_labels[0]}{self.num_connection}'
-                self.v_idx += 1
-                self.num_connection += 1
+    #             # create a connection 2
+    #             connection_vertex_index = self.v_idx
+    #             self.vertices.append(connection_vertex_index)
+    #             self.partitions[connection_vertex_index] = self.init_vertices_set[0]
+    #             self.labels[connection_vertex_index] = f'{self.init_labels[0]}{self.num_connection}'
+    #             self.v_idx += 1
+    #             self.num_connection += 1
                 
-                # connect with edges
-                edge = (connection_vertex_index-1, connection_vertex_index)
-                assert edge not in self.edges, "edge already exists!"
-                self.edges.append(edge)
+    #             # connect with edges
+    #             edge = (connection_vertex_index-1, connection_vertex_index)
+    #             assert edge not in self.edges, "edge already exists!"
+    #             self.edges.append(edge)
                 
-                edge = (connection_vertex_index, target_vertex)
-                assert edge not in self.edges, "edge already exists!"
-                self.edges.append(edge)    
+    #             edge = (connection_vertex_index, target_vertex)
+    #             assert edge not in self.edges, "edge already exists!"
+    #             self.edges.append(edge)    
                 
-            # ipdb.set_trace()
-        elif self.num_robot == 4:
-            if self.reverse == False:
-                self.reverse = True
-                # create a connection 1
-                connection_vertex_index = self.v_idx
-                self.vertices.append(connection_vertex_index)
-                self.partitions[connection_vertex_index] = self.init_vertices_set[0]
-                self.labels[connection_vertex_index] = f'{self.init_labels[0]}{self.num_connection}'
-                self.v_idx += 1
-                self.num_connection += 1
+    #         # ipdb.set_trace()
+    #     elif self.num_robot == 4:
+    #         if self.reverse == False:
+    #             self.reverse = True
+    #             # create a connection 1
+    #             connection_vertex_index = self.v_idx
+    #             self.vertices.append(connection_vertex_index)
+    #             self.partitions[connection_vertex_index] = self.init_vertices_set[0]
+    #             self.labels[connection_vertex_index] = f'{self.init_labels[0]}{self.num_connection}'
+    #             self.v_idx += 1
+    #             self.num_connection += 1
 
-                # connect with edges
-                edge = (source_vertex, connection_vertex_index)
-                assert edge not in self.edges, "edge already exists!"
-                self.edges.append(edge)
+    #             # connect with edges
+    #             edge = (source_vertex, connection_vertex_index)
+    #             assert edge not in self.edges, "edge already exists!"
+    #             self.edges.append(edge)
                 
-                # create a connection 2
-                connection_vertex_index = self.v_idx
-                self.vertices.append(connection_vertex_index)
-                self.partitions[connection_vertex_index] = self.init_vertices_set[1]
-                self.labels[connection_vertex_index] = f'{self.init_labels[1]}{self.num_connection}'
-                self.v_idx += 1
-                self.num_connection += 1
+    #             # create a connection 2
+    #             connection_vertex_index = self.v_idx
+    #             self.vertices.append(connection_vertex_index)
+    #             self.partitions[connection_vertex_index] = self.init_vertices_set[1]
+    #             self.labels[connection_vertex_index] = f'{self.init_labels[1]}{self.num_connection}'
+    #             self.v_idx += 1
+    #             self.num_connection += 1
                 
-                # connect with edges
-                edge = (connection_vertex_index-1, connection_vertex_index)
-                assert edge not in self.edges, "edge already exists!"
-                self.edges.append(edge)
+    #             # connect with edges
+    #             edge = (connection_vertex_index-1, connection_vertex_index)
+    #             assert edge not in self.edges, "edge already exists!"
+    #             self.edges.append(edge)
                 
-                # create a handovergit checkout -- ltlgcs/transition_system.py
-                handover_vertex_index = self.v_idx
-                self.vertices.append(handover_vertex_index)
-                self.partitions[handover_vertex_index] = self.handover_vertices_set[0]
-                self.labels[handover_vertex_index] = f'{self.handover_labels[0]}{self.num_handover}'
-                self.v_idx += 1
-                self.num_handover += 1
+    #             # create a handovergit checkout -- ltlgcs/transition_system.py
+    #             handover_vertex_index = self.v_idx
+    #             self.vertices.append(handover_vertex_index)
+    #             self.partitions[handover_vertex_index] = self.handover_vertices_set[0]
+    #             self.labels[handover_vertex_index] = f'{self.handover_labels[0]}{self.num_handover}'
+    #             self.v_idx += 1
+    #             self.num_handover += 1
                 
-                # connect with edges
-                edge = (connection_vertex_index, handover_vertex_index)
-                assert edge not in self.edges, "edge already exists!"
-                self.edges.append(edge)
+    #             # connect with edges
+    #             edge = (connection_vertex_index, handover_vertex_index)
+    #             assert edge not in self.edges, "edge already exists!"
+    #             self.edges.append(edge)
                 
-                # create a connection 1
-                connection_vertex_index = self.v_idx
-                self.vertices.append(connection_vertex_index)
-                self.partitions[connection_vertex_index] = self.init_vertices_set[1]
-                self.labels[connection_vertex_index] = f'{self.init_labels[1]}{self.num_connection}'
-                self.v_idx += 1
-                self.num_connection += 1
+    #             # create a connection 1
+    #             connection_vertex_index = self.v_idx
+    #             self.vertices.append(connection_vertex_index)
+    #             self.partitions[connection_vertex_index] = self.init_vertices_set[1]
+    #             self.labels[connection_vertex_index] = f'{self.init_labels[1]}{self.num_connection}'
+    #             self.v_idx += 1
+    #             self.num_connection += 1
                 
-                # connect with edges
-                edge = (handover_vertex_index, connection_vertex_index)
-                assert edge not in self.edges, "edge already exists!"
-                self.edges.append(edge)
+    #             # connect with edges
+    #             edge = (handover_vertex_index, connection_vertex_index)
+    #             assert edge not in self.edges, "edge already exists!"
+    #             self.edges.append(edge)
                 
-                # create a connection 2
-                connection_vertex_index = self.v_idx
-                self.vertices.append(connection_vertex_index)
-                self.partitions[connection_vertex_index] = self.init_vertices_set[2]
-                self.labels[connection_vertex_index] = f'{self.init_labels[2]}{self.num_connection}'
-                self.v_idx += 1
-                self.num_connection += 1
+    #             # create a connection 2
+    #             connection_vertex_index = self.v_idx
+    #             self.vertices.append(connection_vertex_index)
+    #             self.partitions[connection_vertex_index] = self.init_vertices_set[2]
+    #             self.labels[connection_vertex_index] = f'{self.init_labels[2]}{self.num_connection}'
+    #             self.v_idx += 1
+    #             self.num_connection += 1
                 
-                # connect with edges
-                edge = (connection_vertex_index-1, connection_vertex_index)
-                assert edge not in self.edges, "edge already exists!"
-                self.edges.append(edge)
+    #             # connect with edges
+    #             edge = (connection_vertex_index-1, connection_vertex_index)
+    #             assert edge not in self.edges, "edge already exists!"
+    #             self.edges.append(edge)
                 
-                # create a handover
-                handover_vertex_index = self.v_idx
-                self.vertices.append(handover_vertex_index)
-                self.partitions[handover_vertex_index] = self.handover_vertices_set[1]
-                self.labels[handover_vertex_index] = f'{self.handover_labels[1]}{self.num_handover}'
-                self.v_idx += 1
-                self.num_handover += 1
+    #             # create a handover
+    #             handover_vertex_index = self.v_idx
+    #             self.vertices.append(handover_vertex_index)
+    #             self.partitions[handover_vertex_index] = self.handover_vertices_set[1]
+    #             self.labels[handover_vertex_index] = f'{self.handover_labels[1]}{self.num_handover}'
+    #             self.v_idx += 1
+    #             self.num_handover += 1
                 
-                # connect with edges
-                edge = (connection_vertex_index, handover_vertex_index)
-                assert edge not in self.edges, "edge already exists!"
-                self.edges.append(edge)
+    #             # connect with edges
+    #             edge = (connection_vertex_index, handover_vertex_index)
+    #             assert edge not in self.edges, "edge already exists!"
+    #             self.edges.append(edge)
                 
-                # create a connection 1
-                connection_vertex_index = self.v_idx
-                self.vertices.append(connection_vertex_index)
-                self.partitions[connection_vertex_index] = self.init_vertices_set[2]
-                self.labels[connection_vertex_index] = f'{self.init_labels[2]}{self.num_connection}'
-                self.v_idx += 1
-                self.num_connection += 1
+    #             # create a connection 1
+    #             connection_vertex_index = self.v_idx
+    #             self.vertices.append(connection_vertex_index)
+    #             self.partitions[connection_vertex_index] = self.init_vertices_set[2]
+    #             self.labels[connection_vertex_index] = f'{self.init_labels[2]}{self.num_connection}'
+    #             self.v_idx += 1
+    #             self.num_connection += 1
                 
-                # connect with edges
-                edge = (handover_vertex_index, connection_vertex_index)
-                assert edge not in self.edges, "edge already exists!"
-                self.edges.append(edge)
+    #             # connect with edges
+    #             edge = (handover_vertex_index, connection_vertex_index)
+    #             assert edge not in self.edges, "edge already exists!"
+    #             self.edges.append(edge)
                 
-                # create a connection 2
-                connection_vertex_index = self.v_idx
-                self.vertices.append(connection_vertex_index)
-                self.partitions[connection_vertex_index] = self.init_vertices_set[3]
-                self.labels[connection_vertex_index] = f'{self.init_labels[3]}{self.num_connection}'
-                self.v_idx += 1
-                self.num_connection += 1
+    #             # create a connection 2
+    #             connection_vertex_index = self.v_idx
+    #             self.vertices.append(connection_vertex_index)
+    #             self.partitions[connection_vertex_index] = self.init_vertices_set[3]
+    #             self.labels[connection_vertex_index] = f'{self.init_labels[3]}{self.num_connection}'
+    #             self.v_idx += 1
+    #             self.num_connection += 1
                 
-                # connect with edges
-                edge = (connection_vertex_index-1, connection_vertex_index)
-                assert edge not in self.edges, "edge already exists!"
-                self.edges.append(edge)
+    #             # connect with edges
+    #             edge = (connection_vertex_index-1, connection_vertex_index)
+    #             assert edge not in self.edges, "edge already exists!"
+    #             self.edges.append(edge)
                 
-                # create a handover
-                handover_vertex_index = self.v_idx
-                self.vertices.append(handover_vertex_index)
-                self.partitions[handover_vertex_index] = self.handover_vertices_set[2]
-                self.labels[handover_vertex_index] = f'{self.handover_labels[2]}{self.num_handover}'
-                self.v_idx += 1
-                self.num_handover += 1
+    #             # create a handover
+    #             handover_vertex_index = self.v_idx
+    #             self.vertices.append(handover_vertex_index)
+    #             self.partitions[handover_vertex_index] = self.handover_vertices_set[2]
+    #             self.labels[handover_vertex_index] = f'{self.handover_labels[2]}{self.num_handover}'
+    #             self.v_idx += 1
+    #             self.num_handover += 1
                 
-                # connect with edges
-                edge = (connection_vertex_index, handover_vertex_index)
-                assert edge not in self.edges, "edge already exists!"
-                self.edges.append(edge)
+    #             # connect with edges
+    #             edge = (connection_vertex_index, handover_vertex_index)
+    #             assert edge not in self.edges, "edge already exists!"
+    #             self.edges.append(edge)
                 
-                # create a connection 1
-                connection_vertex_index = self.v_idx
-                self.vertices.append(connection_vertex_index)
-                self.partitions[connection_vertex_index] = self.init_vertices_set[3]
-                self.labels[connection_vertex_index] = f'{self.init_labels[3]}{self.num_connection}'
-                self.v_idx += 1
-                self.num_connection += 1
+    #             # create a connection 1
+    #             connection_vertex_index = self.v_idx
+    #             self.vertices.append(connection_vertex_index)
+    #             self.partitions[connection_vertex_index] = self.init_vertices_set[3]
+    #             self.labels[connection_vertex_index] = f'{self.init_labels[3]}{self.num_connection}'
+    #             self.v_idx += 1
+    #             self.num_connection += 1
                 
-                # connect with edges
-                edge = (handover_vertex_index, connection_vertex_index)
-                assert edge not in self.edges, "edge already exists!"
-                self.edges.append(edge)
+    #             # connect with edges
+    #             edge = (handover_vertex_index, connection_vertex_index)
+    #             assert edge not in self.edges, "edge already exists!"
+    #             self.edges.append(edge)
                 
-                # create a connection 2
-                connection_vertex_index = self.v_idx
-                self.vertices.append(connection_vertex_index)
-                self.partitions[connection_vertex_index] = self.init_vertices_set[0]
-                self.labels[connection_vertex_index] = f'{self.init_labels[0]}{self.num_connection}'
-                self.v_idx += 1
-                self.num_connection += 1
+    #             # create a connection 2
+    #             connection_vertex_index = self.v_idx
+    #             self.vertices.append(connection_vertex_index)
+    #             self.partitions[connection_vertex_index] = self.init_vertices_set[0]
+    #             self.labels[connection_vertex_index] = f'{self.init_labels[0]}{self.num_connection}'
+    #             self.v_idx += 1
+    #             self.num_connection += 1
                 
-                # connect with edges
-                edge = (connection_vertex_index-1, connection_vertex_index)
-                assert edge not in self.edges, "edge already exists!"
-                self.edges.append(edge)
+    #             # connect with edges
+    #             edge = (connection_vertex_index-1, connection_vertex_index)
+    #             assert edge not in self.edges, "edge already exists!"
+    #             self.edges.append(edge)
                 
-                edge = (connection_vertex_index, target_vertex)
-                assert edge not in self.edges, "edge already exists!"
-                self.edges.append(edge)
-            else:
-                self.reverse = False
-                # create a connection 1
-                connection_vertex_index = self.v_idx
-                self.vertices.append(connection_vertex_index)
-                self.partitions[connection_vertex_index] = self.init_vertices_set[0]
-                self.labels[connection_vertex_index] = f'{self.init_labels[0]}{self.num_connection}'
-                self.v_idx += 1
-                self.num_connection += 1
+    #             edge = (connection_vertex_index, target_vertex)
+    #             assert edge not in self.edges, "edge already exists!"
+    #             self.edges.append(edge)
+    #         else:
+    #             self.reverse = False
+    #             # create a connection 1
+    #             connection_vertex_index = self.v_idx
+    #             self.vertices.append(connection_vertex_index)
+    #             self.partitions[connection_vertex_index] = self.init_vertices_set[0]
+    #             self.labels[connection_vertex_index] = f'{self.init_labels[0]}{self.num_connection}'
+    #             self.v_idx += 1
+    #             self.num_connection += 1
                 
-                # connect with edges
-                edge = (source_vertex, connection_vertex_index)
-                assert edge not in self.edges, "edge already exists!"
-                self.edges.append(edge)
+    #             # connect with edges
+    #             edge = (source_vertex, connection_vertex_index)
+    #             assert edge not in self.edges, "edge already exists!"
+    #             self.edges.append(edge)
                 
-                # create a connection 2
-                connection_vertex_index = self.v_idx
-                self.vertices.append(connection_vertex_index)
-                self.partitions[connection_vertex_index] = self.init_vertices_set[3]
-                self.labels[connection_vertex_index] = f'{self.init_labels[3]}{self.num_connection}'
-                self.v_idx += 1
-                self.num_connection += 1
+    #             # create a connection 2
+    #             connection_vertex_index = self.v_idx
+    #             self.vertices.append(connection_vertex_index)
+    #             self.partitions[connection_vertex_index] = self.init_vertices_set[3]
+    #             self.labels[connection_vertex_index] = f'{self.init_labels[3]}{self.num_connection}'
+    #             self.v_idx += 1
+    #             self.num_connection += 1
                 
-                # connect with edges
-                edge = (connection_vertex_index-1, connection_vertex_index)
-                assert edge not in self.edges, "edge already exists!"
-                self.edges.append(edge)
+    #             # connect with edges
+    #             edge = (connection_vertex_index-1, connection_vertex_index)
+    #             assert edge not in self.edges, "edge already exists!"
+    #             self.edges.append(edge)
                 
-                # create a handover
-                handover_vertex_index = self.v_idx
-                self.vertices.append(handover_vertex_index)
-                self.partitions[handover_vertex_index] = self.handover_vertices_set[2]
-                self.labels[handover_vertex_index] = f'{self.handover_labels[2]}{self.num_handover}'
-                self.v_idx += 1
-                self.num_handover += 1
+    #             # create a handover
+    #             handover_vertex_index = self.v_idx
+    #             self.vertices.append(handover_vertex_index)
+    #             self.partitions[handover_vertex_index] = self.handover_vertices_set[2]
+    #             self.labels[handover_vertex_index] = f'{self.handover_labels[2]}{self.num_handover}'
+    #             self.v_idx += 1
+    #             self.num_handover += 1
                 
-                # connect with edges
-                edge = (connection_vertex_index, handover_vertex_index)
-                assert edge not in self.edges, "edge already exists!"
-                self.edges.append(edge)
+    #             # connect with edges
+    #             edge = (connection_vertex_index, handover_vertex_index)
+    #             assert edge not in self.edges, "edge already exists!"
+    #             self.edges.append(edge)
                 
-                # create a connection 1
-                connection_vertex_index = self.v_idx
-                self.vertices.append(connection_vertex_index)
-                self.partitions[connection_vertex_index] = self.init_vertices_set[3]
-                self.labels[connection_vertex_index] = f'{self.init_labels[3]}{self.num_connection}'
-                self.v_idx += 1
-                self.num_connection += 1
+    #             # create a connection 1
+    #             connection_vertex_index = self.v_idx
+    #             self.vertices.append(connection_vertex_index)
+    #             self.partitions[connection_vertex_index] = self.init_vertices_set[3]
+    #             self.labels[connection_vertex_index] = f'{self.init_labels[3]}{self.num_connection}'
+    #             self.v_idx += 1
+    #             self.num_connection += 1
                 
-                # connect with edges
-                edge = (handover_vertex_index, connection_vertex_index)
-                assert edge not in self.edges, "edge already exists!"
-                self.edges.append(edge)
+    #             # connect with edges
+    #             edge = (handover_vertex_index, connection_vertex_index)
+    #             assert edge not in self.edges, "edge already exists!"
+    #             self.edges.append(edge)
                 
-                # create a connection 2
-                connection_vertex_index = self.v_idx
-                self.vertices.append(connection_vertex_index)
-                self.partitions[connection_vertex_index] = self.init_vertices_set[2]
-                self.labels[connection_vertex_index] = f'{self.init_labels[2]}{self.num_connection}'
-                self.v_idx += 1
-                self.num_connection += 1
+    #             # create a connection 2
+    #             connection_vertex_index = self.v_idx
+    #             self.vertices.append(connection_vertex_index)
+    #             self.partitions[connection_vertex_index] = self.init_vertices_set[2]
+    #             self.labels[connection_vertex_index] = f'{self.init_labels[2]}{self.num_connection}'
+    #             self.v_idx += 1
+    #             self.num_connection += 1
                 
-                # connect with edges
-                edge = (connection_vertex_index-1, connection_vertex_index)
-                assert edge not in self.edges, "edge already exists!"
-                self.edges.append(edge)
+    #             # connect with edges
+    #             edge = (connection_vertex_index-1, connection_vertex_index)
+    #             assert edge not in self.edges, "edge already exists!"
+    #             self.edges.append(edge)
                 
-                # create a handover
-                handover_vertex_index = self.v_idx
-                self.vertices.append(handover_vertex_index)
-                self.partitions[handover_vertex_index] = self.handover_vertices_set[1]
-                self.labels[handover_vertex_index] = f'{self.handover_labels[1]}{self.num_handover}'
-                self.v_idx += 1
-                self.num_handover += 1
+    #             # create a handover
+    #             handover_vertex_index = self.v_idx
+    #             self.vertices.append(handover_vertex_index)
+    #             self.partitions[handover_vertex_index] = self.handover_vertices_set[1]
+    #             self.labels[handover_vertex_index] = f'{self.handover_labels[1]}{self.num_handover}'
+    #             self.v_idx += 1
+    #             self.num_handover += 1
                 
-                # connect with edges
-                edge = (connection_vertex_index, handover_vertex_index)
-                assert edge not in self.edges, "edge already exists!"
-                self.edges.append(edge)
+    #             # connect with edges
+    #             edge = (connection_vertex_index, handover_vertex_index)
+    #             assert edge not in self.edges, "edge already exists!"
+    #             self.edges.append(edge)
                 
-                # create a connection 1
-                connection_vertex_index = self.v_idx
-                self.vertices.append(connection_vertex_index)
-                self.partitions[connection_vertex_index] = self.init_vertices_set[2]
-                self.labels[connection_vertex_index] = f'{self.init_labels[2]}{self.num_connection}'
-                self.v_idx += 1
-                self.num_connection += 1
+    #             # create a connection 1
+    #             connection_vertex_index = self.v_idx
+    #             self.vertices.append(connection_vertex_index)
+    #             self.partitions[connection_vertex_index] = self.init_vertices_set[2]
+    #             self.labels[connection_vertex_index] = f'{self.init_labels[2]}{self.num_connection}'
+    #             self.v_idx += 1
+    #             self.num_connection += 1
                 
-                # connect with edges
-                edge = (handover_vertex_index, connection_vertex_index)
-                assert edge not in self.edges, "edge already exists!"
-                self.edges.append(edge)
+    #             # connect with edges
+    #             edge = (handover_vertex_index, connection_vertex_index)
+    #             assert edge not in self.edges, "edge already exists!"
+    #             self.edges.append(edge)
                 
-                # create a connection 2
-                connection_vertex_index = self.v_idx
-                self.vertices.append(connection_vertex_index)
-                self.partitions[connection_vertex_index] = self.init_vertices_set[1]
-                self.labels[connection_vertex_index] = f'{self.init_labels[1]}{self.num_connection}'
-                self.v_idx += 1
-                self.num_connection += 1
+    #             # create a connection 2
+    #             connection_vertex_index = self.v_idx
+    #             self.vertices.append(connection_vertex_index)
+    #             self.partitions[connection_vertex_index] = self.init_vertices_set[1]
+    #             self.labels[connection_vertex_index] = f'{self.init_labels[1]}{self.num_connection}'
+    #             self.v_idx += 1
+    #             self.num_connection += 1
                 
-                # connect with edges
-                edge = (connection_vertex_index-1, connection_vertex_index)
-                assert edge not in self.edges, "edge already exists!"
-                self.edges.append(edge)
+    #             # connect with edges
+    #             edge = (connection_vertex_index-1, connection_vertex_index)
+    #             assert edge not in self.edges, "edge already exists!"
+    #             self.edges.append(edge)
                 
-                # create a handover
-                handover_vertex_index = self.v_idx
-                self.vertices.append(handover_vertex_index)
-                self.partitions[handover_vertex_index] = self.handover_vertices_set[0]
-                self.labels[handover_vertex_index] = f'{self.handover_labels[0]}{self.num_handover}'
-                self.v_idx += 1
-                self.num_handover += 1
+    #             # create a handover
+    #             handover_vertex_index = self.v_idx
+    #             self.vertices.append(handover_vertex_index)
+    #             self.partitions[handover_vertex_index] = self.handover_vertices_set[0]
+    #             self.labels[handover_vertex_index] = f'{self.handover_labels[0]}{self.num_handover}'
+    #             self.v_idx += 1
+    #             self.num_handover += 1
                 
-                # connect with edges
-                edge = (connection_vertex_index, handover_vertex_index)
-                assert edge not in self.edges, "edge already exists!"
-                self.edges.append(edge)
+    #             # connect with edges
+    #             edge = (connection_vertex_index, handover_vertex_index)
+    #             assert edge not in self.edges, "edge already exists!"
+    #             self.edges.append(edge)
                 
-                # create a connection 1
-                connection_vertex_index = self.v_idx
-                self.vertices.append(connection_vertex_index)
-                self.partitions[connection_vertex_index] = self.init_vertices_set[1]
-                self.labels[connection_vertex_index] = f'{self.init_labels[1]}{self.num_connection}'
-                self.v_idx += 1
-                self.num_connection += 1
+    #             # create a connection 1
+    #             connection_vertex_index = self.v_idx
+    #             self.vertices.append(connection_vertex_index)
+    #             self.partitions[connection_vertex_index] = self.init_vertices_set[1]
+    #             self.labels[connection_vertex_index] = f'{self.init_labels[1]}{self.num_connection}'
+    #             self.v_idx += 1
+    #             self.num_connection += 1
                 
-                # connect with edges
-                edge = (handover_vertex_index, connection_vertex_index)
-                assert edge not in self.edges, "edge already exists!"
-                self.edges.append(edge)
+    #             # connect with edges
+    #             edge = (handover_vertex_index, connection_vertex_index)
+    #             assert edge not in self.edges, "edge already exists!"
+    #             self.edges.append(edge)
                 
-                # create a connection 2
-                connection_vertex_index = self.v_idx
-                self.vertices.append(connection_vertex_index)
-                self.partitions[connection_vertex_index] = self.init_vertices_set[0]
-                self.labels[connection_vertex_index] = f'{self.init_labels[0]}{self.num_connection}'
-                self.v_idx += 1
-                self.num_connection += 1
+    #             # create a connection 2
+    #             connection_vertex_index = self.v_idx
+    #             self.vertices.append(connection_vertex_index)
+    #             self.partitions[connection_vertex_index] = self.init_vertices_set[0]
+    #             self.labels[connection_vertex_index] = f'{self.init_labels[0]}{self.num_connection}'
+    #             self.v_idx += 1
+    #             self.num_connection += 1
                 
-                # connect with edges
-                edge = (connection_vertex_index-1, connection_vertex_index)
-                assert edge not in self.edges, "edge already exists!"
-                self.edges.append(edge)
+    #             # connect with edges
+    #             edge = (connection_vertex_index-1, connection_vertex_index)
+    #             assert edge not in self.edges, "edge already exists!"
+    #             self.edges.append(edge)
                 
-                edge = (connection_vertex_index, target_vertex)
-                assert edge not in self.edges, "edge already exists!"
-                self.edges.append(edge)
+    #             edge = (connection_vertex_index, target_vertex)
+    #             assert edge not in self.edges, "edge already exists!"
+    #             self.edges.append(edge)
           
-    def AddEdgesForHandover(self):
-        """
-        Add transitions between all partitions that have some non-empty
-        intersection. 
-        """
-        #reset all the value
-        self.vertices = []  # represented as integer indices [1,2,...]
-        self.edges = []     # represented as tuples of indices [(1,3),...]
-        self.target_vertices = []
-        self.partitions = {}  # {vertex_index : ConvexSet}
-        self.labels = {}      # {vertex_index : ["a", "b"]}
-        self.v_idx = 0
+    # def AddEdgesForHandover(self):
+    #     """
+    #     Add transitions between all partitions that have some non-empty
+    #     intersection. 
+    #     """
+    #     #reset all the value
+    #     self.vertices = []  # represented as integer indices [1,2,...]
+    #     self.edges = []     # represented as tuples of indices [(1,3),...]
+    #     self.target_vertices = []
+    #     self.partitions = {}  # {vertex_index : ConvexSet}
+    #     self.labels = {}      # {vertex_index : ["a", "b"]}
+    #     self.v_idx = 0
         
-        for i in range(len(self.target_vertices_set)):
-            vertex_index = self.v_idx
-            self.vertices.append(vertex_index)
-            self.target_vertices.append(vertex_index)
-            self.partitions[vertex_index] = self.target_vertices_set[i]
-            self.labels[vertex_index] = self.target_labels[i]
-            self.v_idx += 1
+    #     for i in range(len(self.target_vertices_set)):
+    #         vertex_index = self.v_idx
+    #         self.vertices.append(vertex_index)
+    #         self.target_vertices.append(vertex_index)
+    #         self.partitions[vertex_index] = self.target_vertices_set[i]
+    #         self.labels[vertex_index] = self.target_labels[i]
+    #         self.v_idx += 1
 
-        for pair in list(combinations(self.target_vertices, 2)):
-            v1 = pair[0]
-            v2 = pair[1]
-            r1 = self.partitions[v1]
-            r2 = self.partitions[v2]
-            l1 = self.labels[v1]
-            l2 = self.labels[v2]
+    #     for pair in list(combinations(self.target_vertices, 2)):
+    #         v1 = pair[0]
+    #         v2 = pair[1]
+    #         r1 = self.partitions[v1]
+    #         r2 = self.partitions[v2]
+    #         l1 = self.labels[v1]
+    #         l2 = self.labels[v2]
 
-            index1 = self.findIndex(f'{l1}','target')
-            index2 = self.findIndex(f'{l2}','target')    
-            # ipdb.set_trace()
-            if index1[0] == index2[0]:
-                self.AddEdgewithConnection(v1,v2)
-                self.AddEdgewithConnection(v2,v1)
-            else:
-                self.AddEdgewithConnection(v1,v2)
-                self.AddEdgewithConnection(v2,v1)
-                self.AddEdgewithHandover(v1,v2)
-                self.AddEdgewithHandover(v2,v1)
+    #         index1 = self.findIndex(f'{l1}','target')
+    #         index2 = self.findIndex(f'{l2}','target')    
+    #         # ipdb.set_trace()
+    #         if index1[0] == index2[0]:
+    #             self.AddEdgewithConnection(v1,v2)
+    #             self.AddEdgewithConnection(v2,v1)
+    #         else:
+    #             self.AddEdgewithConnection(v1,v2)
+    #             self.AddEdgewithConnection(v2,v1)
+    #             self.AddEdgewithHandover(v1,v2)
+    #             self.AddEdgewithHandover(v2,v1)
 
-        # add edge for self loop 
-        for v in self.target_vertices:
-            edge = (v, v)
-            self.edges.append(edge)
+    #     # add edge for self loop 
+    #     for v in self.target_vertices:
+    #         edge = (v, v)
+    #         self.edges.append(edge)
         
     def findConnectRegion(self,  label):   
         # Extract the non-empty string and replace 'target' with 'connect'
@@ -1300,149 +1292,149 @@ class TransitionSystem(DirectedGraph):
                 break
         return row_number
          
-    def AddEdgewithHandover_index(self, source_vertex, target_vertex, handover_region_index):
-        """
-        Add a transition between two partitions (aka states aka vertices).
+    # def AddEdgewithHandover_index(self, source_vertex, target_vertex, handover_region_index):
+    #     """
+    #     Add a transition between two partitions (aka states aka vertices).
 
-        Args:
-            source_vertex: index of the starting vertex
-            target_vertex: index of the ending vertex
-        """
-        assert source_vertex in self.vertices
-        assert target_vertex in self.vertices
+    #     Args:
+    #         source_vertex: index of the starting vertex
+    #         target_vertex: index of the ending vertex
+    #     """
+    #     assert source_vertex in self.vertices
+    #     assert target_vertex in self.vertices
         
-        connect_dict= dict()
-        conect_label = []
-        l1 = self.labels[source_vertex]
-        l2 = self.labels[target_vertex]
-        connect_key = (str(l1),str(l2))
+    #     connect_dict= dict()
+    #     conect_label = []
+    #     l1 = self.labels[source_vertex]
+    #     l2 = self.labels[target_vertex]
+    #     connect_key = (str(l1),str(l2))
         
-        source_index = self.findConnectRegion(l1)
-        target_index = self.findConnectRegion(l2)
+    #     source_index = self.findConnectRegion(l1)
+    #     target_index = self.findConnectRegion(l2)
             
-        # create a connection old
-        if USING_NEW_RULE == False:
-            connection_vertex_index = self.v_idx
-            self.vertices.append(connection_vertex_index)
-            self.partitions[connection_vertex_index] = self.init_vertices_set[0]
-            self.labels[connection_vertex_index] = f'{self.init_labels[0]}{self.num_connection}'
-            self.v_idx += 1
-            self.num_connection += 1
-            conect_label.append(self.labels[connection_vertex_index])
-        else:
-            connection_vertex_index = self.v_idx
-            self.vertices.append(connection_vertex_index)
-            self.partitions[connection_vertex_index] = self.target_connection_vertices_set[source_index]
-            self.labels[connection_vertex_index] = f'{self.target_connection_labels[source_index]}{self.num_connection}'
-            self.v_idx += 1
-            self.num_connection += 1
-            conect_label.append(self.labels[connection_vertex_index])
+    #     # create a connection old
+    #     if USING_NEW_RULE == False:
+    #         connection_vertex_index = self.v_idx
+    #         self.vertices.append(connection_vertex_index)
+    #         self.partitions[connection_vertex_index] = self.init_vertices_set[0]
+    #         self.labels[connection_vertex_index] = f'{self.init_labels[0]}{self.num_connection}'
+    #         self.v_idx += 1
+    #         self.num_connection += 1
+    #         conect_label.append(self.labels[connection_vertex_index])
+    #     else:
+    #         connection_vertex_index = self.v_idx
+    #         self.vertices.append(connection_vertex_index)
+    #         self.partitions[connection_vertex_index] = self.target_connection_vertices_set[source_index]
+    #         self.labels[connection_vertex_index] = f'{self.target_connection_labels[source_index]}{self.num_connection}'
+    #         self.v_idx += 1
+    #         self.num_connection += 1
+    #         conect_label.append(self.labels[connection_vertex_index])
             
-        # connect with edges
-        edge = (source_vertex, connection_vertex_index)
-        assert edge not in self.edges, "edge already exists!"
-        self.edges.append(edge)
+    #     # connect with edges
+    #     edge = (source_vertex, connection_vertex_index)
+    #     assert edge not in self.edges, "edge already exists!"
+    #     self.edges.append(edge)
         
-        connection_vertex_index = self.v_idx
-        self.vertices.append(connection_vertex_index)
-        self.partitions[connection_vertex_index] = self.init_vertices_set[0]
-        self.labels[connection_vertex_index] = f'{self.init_labels[0]}{self.num_connection}'
-        self.v_idx += 1
-        self.num_connection += 1
+    #     connection_vertex_index = self.v_idx
+    #     self.vertices.append(connection_vertex_index)
+    #     self.partitions[connection_vertex_index] = self.init_vertices_set[0]
+    #     self.labels[connection_vertex_index] = f'{self.init_labels[0]}{self.num_connection}'
+    #     self.v_idx += 1
+    #     self.num_connection += 1
         
-        # connect with edges
-        edge = (connection_vertex_index - 1, connection_vertex_index)
-        assert edge not in self.edges, "edge already exists!"
-        self.edges.append(edge)
-        # ipdb.set_trace()
-        # connection_vertex_index = self.v_idx
-        # self.vertices.append(connection_vertex_index)
-        # self.partitions[connection_vertex_index] = self.init_vertices_set[handover_region_index+1]
-        # self.labels[connection_vertex_index] = f'{self.init_labels[handover_region_index+1]}{self.num_connection}'
-        # self.v_idx += 1
-        # self.num_connection += 1
-        # conect_label.append(self.labels[connection_vertex_index])
+    #     # connect with edges
+    #     edge = (connection_vertex_index - 1, connection_vertex_index)
+    #     assert edge not in self.edges, "edge already exists!"
+    #     self.edges.append(edge)
+    #     # ipdb.set_trace()
+    #     # connection_vertex_index = self.v_idx
+    #     # self.vertices.append(connection_vertex_index)
+    #     # self.partitions[connection_vertex_index] = self.init_vertices_set[handover_region_index+1]
+    #     # self.labels[connection_vertex_index] = f'{self.init_labels[handover_region_index+1]}{self.num_connection}'
+    #     # self.v_idx += 1
+    #     # self.num_connection += 1
+    #     # conect_label.append(self.labels[connection_vertex_index])
         
-        # # connect with edges
-        # edge = (connection_vertex_index - 1, connection_vertex_index)
-        # assert edge not in self.edges, "edge already exists!"
-        # self.edges.append(edge)
+    #     # # connect with edges
+    #     # edge = (connection_vertex_index - 1, connection_vertex_index)
+    #     # assert edge not in self.edges, "edge already exists!"
+    #     # self.edges.append(edge)
         
-        # create a handover
-        handover_vertex_index = self.v_idx
-        self.vertices.append(handover_vertex_index)
-        self.partitions[handover_vertex_index] = self.handover_vertices_set[handover_region_index]
-        self.labels[handover_vertex_index] = f'{self.handover_labels[handover_region_index]}{self.num_handover}'
-        self.v_idx += 1
-        self.num_handover += 1
-        conect_label.append(self.labels[handover_vertex_index])
+    #     # create a handover
+    #     handover_vertex_index = self.v_idx
+    #     self.vertices.append(handover_vertex_index)
+    #     self.partitions[handover_vertex_index] = self.handover_vertices_set[handover_region_index]
+    #     self.labels[handover_vertex_index] = f'{self.handover_labels[handover_region_index]}{self.num_handover}'
+    #     self.v_idx += 1
+    #     self.num_handover += 1
+    #     conect_label.append(self.labels[handover_vertex_index])
         
-        # connect with edges
-        edge = (connection_vertex_index, handover_vertex_index)
-        assert edge not in self.edges, "edge already exists!"
-        self.edges.append(edge)
+    #     # connect with edges
+    #     edge = (connection_vertex_index, handover_vertex_index)
+    #     assert edge not in self.edges, "edge already exists!"
+    #     self.edges.append(edge)
         
-        # connection_vertex_index = self.v_idx
-        # self.vertices.append(connection_vertex_index)
-        # self.partitions[connection_vertex_index] = self.init_vertices_set[handover_region_index+1]
-        # self.labels[connection_vertex_index] = f'{self.init_labels[handover_region_index+1]}{self.num_connection}'
-        # self.v_idx += 1
-        # self.num_connection += 1
-        # conect_label.append(self.labels[connection_vertex_index])
+    #     # connection_vertex_index = self.v_idx
+    #     # self.vertices.append(connection_vertex_index)
+    #     # self.partitions[connection_vertex_index] = self.init_vertices_set[handover_region_index+1]
+    #     # self.labels[connection_vertex_index] = f'{self.init_labels[handover_region_index+1]}{self.num_connection}'
+    #     # self.v_idx += 1
+    #     # self.num_connection += 1
+    #     # conect_label.append(self.labels[connection_vertex_index])
         
-        # # connect with edges
-        # edge = (handover_vertex_index, connection_vertex_index)
-        # assert edge not in self.edges, "edge already exists!"
-        # self.edges.append(edge)
+    #     # # connect with edges
+    #     # edge = (handover_vertex_index, connection_vertex_index)
+    #     # assert edge not in self.edges, "edge already exists!"
+    #     # self.edges.append(edge)
         
-        connection_vertex_index = self.v_idx
-        self.vertices.append(connection_vertex_index)
-        self.partitions[connection_vertex_index] = self.init_vertices_set[0]
-        self.labels[connection_vertex_index] = f'{self.init_labels[0]}{self.num_connection}'
-        self.v_idx += 1
-        self.num_connection += 1
-        conect_label.append(self.labels[connection_vertex_index])
+    #     connection_vertex_index = self.v_idx
+    #     self.vertices.append(connection_vertex_index)
+    #     self.partitions[connection_vertex_index] = self.init_vertices_set[0]
+    #     self.labels[connection_vertex_index] = f'{self.init_labels[0]}{self.num_connection}'
+    #     self.v_idx += 1
+    #     self.num_connection += 1
+    #     conect_label.append(self.labels[connection_vertex_index])
         
-        # connection_vertex_index = self.v_idx
-        # self.vertices.append(connection_vertex_index)
-        # self.partitions[connection_vertex_index] = self.test_connection_vertices_set[0]
-        # self.labels[connection_vertex_index] = f'{self.test_connection_labels[0]}{self.num_connection}'
-        # self.v_idx += 1
-        # self.num_connection += 1
-        # connect with edges
-        edge = (connection_vertex_index - 1, connection_vertex_index)
-        assert edge not in self.edges, "edge already exists!"
-        self.edges.append(edge)
+    #     # connection_vertex_index = self.v_idx
+    #     # self.vertices.append(connection_vertex_index)
+    #     # self.partitions[connection_vertex_index] = self.test_connection_vertices_set[0]
+    #     # self.labels[connection_vertex_index] = f'{self.test_connection_labels[0]}{self.num_connection}'
+    #     # self.v_idx += 1
+    #     # self.num_connection += 1
+    #     # connect with edges
+    #     edge = (connection_vertex_index - 1, connection_vertex_index)
+    #     assert edge not in self.edges, "edge already exists!"
+    #     self.edges.append(edge)
         
-        if USING_NEW_RULE == False:
-            connection_vertex_index = self.v_idx
-            self.vertices.append(connection_vertex_index)
-            self.partitions[connection_vertex_index] = self.init_vertices_set[0]
-            self.labels[connection_vertex_index] = f'{self.init_labels[0]}{self.num_connection}'
-            self.v_idx += 1
-            self.num_connection += 1
-            conect_label.append(self.labels[connection_vertex_index])
+    #     if USING_NEW_RULE == False:
+    #         connection_vertex_index = self.v_idx
+    #         self.vertices.append(connection_vertex_index)
+    #         self.partitions[connection_vertex_index] = self.init_vertices_set[0]
+    #         self.labels[connection_vertex_index] = f'{self.init_labels[0]}{self.num_connection}'
+    #         self.v_idx += 1
+    #         self.num_connection += 1
+    #         conect_label.append(self.labels[connection_vertex_index])
             
-        else:
-            connection_vertex_index = self.v_idx
-            self.vertices.append(connection_vertex_index)
-            self.partitions[connection_vertex_index] = self.target_connection_vertices_set[target_index]
-            self.labels[connection_vertex_index] = f'{self.target_connection_labels[target_index]}{self.num_connection}'
-            self.v_idx += 1
-            self.num_connection += 1
-            conect_label.append(self.labels[connection_vertex_index])
+    #     else:
+    #         connection_vertex_index = self.v_idx
+    #         self.vertices.append(connection_vertex_index)
+    #         self.partitions[connection_vertex_index] = self.target_connection_vertices_set[target_index]
+    #         self.labels[connection_vertex_index] = f'{self.target_connection_labels[target_index]}{self.num_connection}'
+    #         self.v_idx += 1
+    #         self.num_connection += 1
+    #         conect_label.append(self.labels[connection_vertex_index])
             
-        # connect with edges
-        edge = (connection_vertex_index - 1, connection_vertex_index)
-        assert edge not in self.edges, "edge already exists!"
-        self.edges.append(edge)
+    #     # connect with edges
+    #     edge = (connection_vertex_index - 1, connection_vertex_index)
+    #     assert edge not in self.edges, "edge already exists!"
+    #     self.edges.append(edge)
         
-        edge = (connection_vertex_index, target_vertex)
-        assert edge not in self.edges, "edge already exists!"
-        self.edges.append(edge)
-        connect_dict[connect_key] = conect_label
+    #     edge = (connection_vertex_index, target_vertex)
+    #     assert edge not in self.edges, "edge already exists!"
+    #     self.edges.append(edge)
+    #     connect_dict[connect_key] = conect_label
         
-        return connect_dict
+    #     return connect_dict
                   
     def AddEdgewithConnectionToInit(self):
         # add init "[][]" to connect region  
@@ -1536,68 +1528,68 @@ class TransitionSystem(DirectedGraph):
                 assert edge not in self.edges, "edge already exists!"
                 self.edges.append(edge)
         
-    def AddEdgesForHandover_four_robot(self):
-        """
-        Add transitions between all partitions that have some non-empty
-        intersection. 
-        """
-        #reset all the value
-        self.vertices = []  # represented as integer indices [1,2,...]
-        self.edges = []     # represented as tuples of indices [(1,3),...]
-        self.target_vertices = []
-        self.partitions = {}  # {vertex_index : ConvexSet}
-        self.labels = {}      # {vertex_index : ["a", "b"]}
-        self.v_idx = 0
-        list_region = ['12', '13', '14', '23', '24', '34']
-        for i in range(len(self.target_vertices_set)):
-            vertex_index = self.v_idx
-            self.vertices.append(vertex_index)
-            self.target_vertices.append(vertex_index)
-            self.partitions[vertex_index] = self.target_vertices_set[i]
-            self.labels[vertex_index] = self.target_labels[i]
-            self.v_idx += 1
+    # def AddEdgesForHandover_four_robot(self):
+    #     """
+    #     Add transitions between all partitions that have some non-empty
+    #     intersection. 
+    #     """
+    #     #reset all the value
+    #     self.vertices = []  # represented as integer indices [1,2,...]
+    #     self.edges = []     # represented as tuples of indices [(1,3),...]
+    #     self.target_vertices = []
+    #     self.partitions = {}  # {vertex_index : ConvexSet}
+    #     self.labels = {}      # {vertex_index : ["a", "b"]}
+    #     self.v_idx = 0
+    #     list_region = ['12', '13', '14', '23', '24', '34']
+    #     for i in range(len(self.target_vertices_set)):
+    #         vertex_index = self.v_idx
+    #         self.vertices.append(vertex_index)
+    #         self.target_vertices.append(vertex_index)
+    #         self.partitions[vertex_index] = self.target_vertices_set[i]
+    #         self.labels[vertex_index] = self.target_labels[i]
+    #         self.v_idx += 1
 
-        connection_dict= dict()
+    #     connection_dict= dict()
         
-        # Iterate over pairwise combinations
-        for pair in list(combinations(self.target_vertices, 2)):
-            v1 = pair[0]
-            v2 = pair[1]
+    #     # Iterate over pairwise combinations
+    #     for pair in list(combinations(self.target_vertices, 2)):
+    #         v1 = pair[0]
+    #         v2 = pair[1]
 
-            r1 = self.partitions[v1]
-            r2 = self.partitions[v2]
-            l1 = self.labels[v1]
-            l2 = self.labels[v2]
-            index1 = self.findIndex(f'{l1}','target')
-            index2 = self.findIndex(f'{l2}','target')    
-            if index1[0] == index2[0]:
-                dict_1 = self.AddEdgewithConnection(v1,v2)
-                connection_dict.update(dict_1)
-                dict_1 = self.AddEdgewithConnection(v2,v1)
-                connection_dict.update(dict_1)
-            else:
-                sorted_nums = sorted([index1, index2], reverse=False)
-                current_handover_region = str(sorted_nums[0][0]+1) + str(sorted_nums[1][0]+1)
-                index = list_region.index(current_handover_region)
-                dict_1 = self.AddEdgewithConnection(v1,v2)
-                dict_2 = self.AddEdgewithHandover_index(v1,v2,index)
-                dict_3 = {k: dict_1[k] + dict_2[k] for k in dict_1}
-                connection_dict.update(dict_3)
+    #         r1 = self.partitions[v1]
+    #         r2 = self.partitions[v2]
+    #         l1 = self.labels[v1]
+    #         l2 = self.labels[v2]
+    #         index1 = self.findIndex(f'{l1}','target')
+    #         index2 = self.findIndex(f'{l2}','target')    
+    #         if index1[0] == index2[0]:
+    #             dict_1 = self.AddEdgewithConnection(v1,v2)
+    #             connection_dict.update(dict_1)
+    #             dict_1 = self.AddEdgewithConnection(v2,v1)
+    #             connection_dict.update(dict_1)
+    #         else:
+    #             sorted_nums = sorted([index1, index2], reverse=False)
+    #             current_handover_region = str(sorted_nums[0][0]+1) + str(sorted_nums[1][0]+1)
+    #             index = list_region.index(current_handover_region)
+    #             dict_1 = self.AddEdgewithConnection(v1,v2)
+    #             dict_2 = self.AddEdgewithHandover_index(v1,v2,index)
+    #             dict_3 = {k: dict_1[k] + dict_2[k] for k in dict_1}
+    #             connection_dict.update(dict_3)
                 
-                dict_1 = self.AddEdgewithConnection(v2,v1)
-                dict_2 = self.AddEdgewithHandover_index(v2,v1,index)
-                dict_3 = {k: dict_1[k] + dict_2[k] for k in dict_1}
-                connection_dict.update(dict_3)
+    #             dict_1 = self.AddEdgewithConnection(v2,v1)
+    #             dict_2 = self.AddEdgewithHandover_index(v2,v1,index)
+    #             dict_3 = {k: dict_1[k] + dict_2[k] for k in dict_1}
+    #             connection_dict.update(dict_3)
 
-        # add init conection
-        self.AddEdgewithConnectionToInit()
+    #     # add init conection
+    #     self.AddEdgewithConnectionToInit()
 
-        # add edge for self loop 
-        for v in self.target_vertices:
-            edge = (v, v)
-            self.edges.append(edge)
+    #     # add edge for self loop 
+    #     for v in self.target_vertices:
+    #         edge = (v, v)
+    #         self.edges.append(edge)
             
-        return connection_dict
+    #     return connection_dict
             
     def visualize(self, color_dict={}, background='black', edgecolor='black',
             edgewidth=1.0, alpha=1.0):
