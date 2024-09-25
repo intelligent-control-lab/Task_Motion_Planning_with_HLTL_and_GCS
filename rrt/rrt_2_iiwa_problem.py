@@ -35,9 +35,7 @@ class ManipulationStationSim:
         plant, scene_graph = AddMultibodyPlantSceneGraph(builder, time_step=1e-4)
         parser = Parser(plant)
         parser.package_map().Add("drake_project", "./")        # Setting the location of "drake_project"
-        directives = LoadModelDirectives("./models/two_robot.yaml")
-        # parser.package_map().Add("drake_project", "/home/zhongqi/Documents/workspace/drake_env_1.28/")        # Setting the location of "drake_project"
-        # directives = LoadModelDirectives("/home/zhongqi/Documents/workspace/Task_Motion_Planning/GCS_planning/models/four_robot_close_hand_over_with_non-welded_hand.yaml")
+        directives = LoadModelDirectives("models/two_iiwa/two_robot_no_gripper.yaml")
         models = ProcessModelDirectives(directives, plant, parser)
         plant.Finalize()
         # scenario = LoadScenario(filename=FindResource("models/four_iiwa.yaml"))
@@ -324,7 +322,7 @@ def rrt_planning(problem, max_iterations=1000, prob_sample_q_goal=0.05):
             last_node = rrt_tools.grow_rrt_tree(last_node,q_safe_path[n])
         if rrt_tools.node_reaches_goal(last_node):
             path = rrt_tools.backup_path_from_node(last_node)
-            print("the current iteration time is:",k)
+            print("the rrt current iteration time is:",k)
             return path
         
     return None

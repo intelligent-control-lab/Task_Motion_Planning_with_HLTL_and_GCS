@@ -3,7 +3,7 @@ from matplotlib.patches import Polygon
 from matplotlib.collections import PatchCollection
 import matplotlib.pyplot as plt
 import numpy as np 
-
+import pickle
 def create_convexSet(diagram, plant, configuration):
     diagram_context = diagram.CreateDefaultContext()
     plant_context = diagram.GetMutableSubsystemContext(plant, diagram_context)
@@ -22,6 +22,7 @@ def generate_ConvexRegion(diagram, plant, q_start,q_goal,path):
     q_seed = q_start
     H_start = create_convexSet(diagram, plant, q_start)
     hpoly_list.append(H_start)
+    path = np.array(path)
     while(not H_start.PointInSet(q_goal)):
         for i in range(len(path)):
             if (H_start.A() @ path[i].reshape(-1, 1) - H_start.b().reshape(-1, 1) >= 0).any(): # if path[i] is not in that region, than use this path[i] as q_seed
@@ -65,23 +66,36 @@ def AddShape(plant, shape, name, mass=1, mu=1, color=[0.5, 0.5, 0.9, 1.0]):
 
     return instance
     
-# def generate_ConvexRegion(q_start,q_goal,path):
-#     hpoly_list = []
-#     q_seed = q_start
-#     H_start = create_convexSet(q_start)
-#     hpoly_list.append(H_start)
+def construct_labeled_convex_region(diagram, plant, joint_label):
+    diagram_context = diagram.CreateDefaultContext()
+    for name, configuration in joint_label.items():
+        plant_context = diagram.GetMutableSubsystemContext(plant, diagram_context)
+        plant.SetPositions(plant_context, configuration)
 
-#     while(not H_start.PointInSet(q_goal)):
-#         for i in range(len(path)):
-#             if (H_start.A() @ path[i] - H_start.b().reshape(-1, 1) >= 0).any(): # if path[i] is not in that region, than use this path[i] as q_seed
-#                 q_seed = path[i]
-#                 break
+        iris_options = IrisOptions()
+        iris_options.require_sample_point_is_contained = True
+        iris_options.iteration_limit = 1
+        iris_options.termination_threshold = 2e-2
+        iris_options.relative_termination_threshold = 2e-2
+        iris_options.num_collision_infeasible_samples = 1
+        
+        start_time = time.time()
+        hpoly = IrisInConfigurationSpace(plant, plant_context, iris_options)
+        print(f"Generated a collision-free polytope around {name} with {len(hpoly.b())} faces in {time.time()-start_time} seconds")
 
-#         H_start = create_convexSet(q_seed)
-#         hpoly_list.append(H_start)
-#         path = path[i-1:]
+        with open(f"Iris_regions/two_robot_case1/{name}.pkl", "wb") as f:
+            pickle.dump(hpoly,f)
 
-#     return hpoly_list
+def construct_connected_convex_region_RRT(diagram, plant, joint_label,combinations_list ):
+    for item in combinations_list:
+        q_start = joint_label[item[0]]
+        q_goal= joint_label[item[1]]
+        iiwa_problem = IiwaProblem(q_start=q_start,q_goal=q_goal,is_visualizing=True)
+        path = rrt_planning(iiwa_problem, 1000, 0.05)
+        hpoly_list = generate_ConvexRegion(diagram, plant, q_start,q_goal,path)
+        name = f"{item[0]}_connect_{item[1]}"
+        with open(f"Iris_regions/two_robot_case1/{name}.pkl", "wb") as f:
+            pickle.dump(hpoly_list,f)
 
 def findIndex(data, target):
     lists_str = data.split(',')
@@ -98,6 +112,34 @@ def RigidTransform2Array(RigidTransform):
                             RigidTransform.translation()[1],
                             RigidTransform.translation()[2]]).reshape(7,1)
     return RigidTransform_arrary
+
+def RefineRegion(convex_region, q, robot_num, key_robot_index):    
+    split_A = np.array_split(convex_region.A(), robot_num, axis=1)
+    split_q = np.array_split(q, robot_num, axis=0)
+
+    r,c = convex_region.A().shape
+    if key_robot_index == 0:
+        m1 = np.hstack((np.eye(7), np.zeros((7, 7))))
+        m2 = -m1
+        A_left_pick = np.hstack((np.zeros(split_A[0].shape), split_A[1]))
+        A_left_pick = np.vstack((A_left_pick,m1,m2))    
+        b_left_pick = convex_region.b() - split_A[0] @ split_q[key_robot_index].transpose()
+        b_left_pick = np.vstack((np.reshape(b_left_pick, (r, 1)),np.reshape(split_q[key_robot_index], (7, 1)),-np.reshape(split_q[key_robot_index], (7, 1))))
+        
+    elif key_robot_index == 1:
+        m1 = np.hstack((np.zeros((7, 7)), np.eye(7)))
+        m2 = -m1
+        A_left_pick = np.hstack((split_A[0],np.zeros(split_A[1].shape)))
+        A_left_pick = np.vstack((A_left_pick,m1,m2))   
+        b_left_pick = convex_region.b() - split_A[1] @ split_q[key_robot_index].transpose()
+        b_left_pick = np.vstack((np.reshape(b_left_pick, (r, 1)),np.reshape(split_q[key_robot_index], (7, 1)),-np.reshape(split_q[key_robot_index], (7, 1))))
+        
+    else:
+        raise ValueError("Input must be [1, 0] or [0, 1]")
+    
+    refined_convex_region = HPolyhedron(A_left_pick,b_left_pick)
+    
+    return refined_convex_region
 
 def show_robot(diagram, plant, visualizer, robot_num, object_num, object_init_pose, object_goal_pose, path, vertex_array, iiwa_attach_frame):
     count = 0

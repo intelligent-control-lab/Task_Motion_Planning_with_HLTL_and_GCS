@@ -1,0 +1,57 @@
+directives:
+
+# Add iiwa_1
+- add_model:
+    name: iiwa_1
+    file: package://drake/manipulation/models/iiwa_description/urdf/iiwa14_spheres_dense_collision.urdf
+
+- add_weld:
+    parent: world
+    child: iiwa_1::base
+
+# # Add schunk_1
+# - add_model:
+#     name: wsg_1
+#     file: package://drake_project/examples/models/two_iiwa/schunk_wsg_50_no_tip.sdf
+
+# - add_frame:
+#     name: iiwa_1::wsg_attach
+#     X_PF:
+#       base_frame: iiwa_1::iiwa_link_7
+#       translation: [0, 0, 0.114]
+#       rotation: !Rpy { deg: [90.0, 0.0, 90.0]}
+
+# - add_weld:
+#     parent: iiwa_1::wsg_attach
+#     child: wsg_1::body
+
+# Add iiwa_2
+- add_model:
+    name: iiwa_2
+    file: package://drake/manipulation/models/iiwa_description/urdf/iiwa14_spheres_dense_collision.urdf
+
+- add_frame:
+    name: iiwa_2_origin
+    X_PF:
+      base_frame: world
+      translation: [0, 1.25, 0]
+
+- add_weld:
+    parent: iiwa_2_origin
+    child: iiwa_2::base
+
+# # Add schunk_2
+# - add_model:
+#     name: wsg_2
+#     file: package://drake_project/examples/models/two_iiwa/schunk_wsg_50_no_tip.sdf
+
+# - add_frame:
+#     name: iiwa_2::wsg_attach
+#     X_PF:
+#       base_frame: iiwa_2::iiwa_link_7
+#       translation: [0, 0, 0.114]
+#       rotation: !Rpy { deg: [90.0, 0.0, 90.0]}
+
+# - add_weld:
+#     parent: iiwa_2::wsg_attach
+#     child: wsg_2::body

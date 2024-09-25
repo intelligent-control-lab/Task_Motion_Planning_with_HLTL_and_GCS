@@ -349,7 +349,7 @@ def rrt_planning(problem, max_iterations=1000, prob_sample_q_goal=0.05):
             
             if rrt_tools.node_reaches_goal(last_node):
                 path = rrt_tools.backup_path_from_node(last_node)
-                print("the current iteration time is:",k)
+                print("the rrt current iteration time is:",k)
                 return path
             
     return None
