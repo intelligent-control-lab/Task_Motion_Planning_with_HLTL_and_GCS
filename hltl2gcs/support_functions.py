@@ -87,7 +87,7 @@ def construct_labeled_convex_region(diagram, plant, joint_label,path):
         with open(f"Iris_regions/{path}/{name}.pkl", "wb") as f:
             pickle.dump(hpoly,f)
 
-def construct_connected_convex_region_RRT(diagram, plant, joint_label, combinations_list, path):
+def construct_connected_convex_region_RRT(diagram, plant, joint_label, combinations_list, IiwaProblem, rrt_planning, path):
     for item in combinations_list:
         q_start = joint_label[item[0]]
         q_goal= joint_label[item[1]]
@@ -114,31 +114,49 @@ def RigidTransform2Array(RigidTransform):
                             RigidTransform.translation()[2]]).reshape(7,1)
     return RigidTransform_arrary
 
-def RefineRegion(convex_region, q, robot_num, key_robot_index):    
+def RefineRegion(convex_region, q, robot_num, key_robot_pattern, key_robot_index,is_handover = False):    
     split_A = np.array_split(convex_region.A(), robot_num, axis=1)
+    split_A_copy = np.array_split(convex_region.A(), robot_num, axis=1)
     split_q = np.array_split(q, robot_num, axis=0)
-
+    robot_dof = int(len(q) / robot_num)
     r,c = convex_region.A().shape
-    if key_robot_index == 0:        # robot 1 pick case
-        m1 = np.hstack((np.eye(7), np.zeros((7, 7))))
-        m2 = -m1
-        A_left_pick = np.hstack((np.zeros(split_A[0].shape), split_A[1]))
-        A_left_pick = np.vstack((A_left_pick,m1,m2))    
-        b_left_pick = convex_region.b() - split_A[0] @ split_q[key_robot_index].transpose()
-        b_left_pick = np.vstack((np.reshape(b_left_pick, (r, 1)),np.reshape(split_q[key_robot_index], (7, 1)),-np.reshape(split_q[key_robot_index], (7, 1))))
-        refined_convex_region = HPolyhedron(A_left_pick,b_left_pick)
-    elif key_robot_index == 1:      # robot 2 pick case
-        m1 = np.hstack((np.zeros((7, 7)), np.eye(7)))
-        m2 = -m1
-        A_left_pick = np.hstack((split_A[0],np.zeros(split_A[1].shape)))
-        A_left_pick = np.vstack((A_left_pick,m1,m2))   
-        b_left_pick = convex_region.b() - split_A[1] @ split_q[key_robot_index].transpose()
-        b_left_pick = np.vstack((np.reshape(b_left_pick, (r, 1)),np.reshape(split_q[key_robot_index], (7, 1)),-np.reshape(split_q[key_robot_index], (7, 1))))
-        refined_convex_region = HPolyhedron(A_left_pick,b_left_pick)
-    elif key_robot_index == [0,1]:  # handover case
-        refined_convex_region = convex_region
+
+    if is_handover == False:
+        if robot_num == 2:
+            m1 = np.kron(key_robot_pattern, np.eye(robot_dof))
+            m2 = -m1
+            split_A[key_robot_index] = np.zeros(split_A[key_robot_index].shape)
+            A = np.hstack((split_A[0],split_A[1]))
+            A = np.vstack((A,m1,m2))
+            b = convex_region.b() - split_A_copy[key_robot_index] @ split_q[key_robot_index].transpose()
+            b = np.vstack((np.reshape(b, (r, 1)),np.reshape(split_q[key_robot_index], (robot_dof, 1)),-np.reshape(split_q[key_robot_index], (robot_dof, 1))))
+            refined_convex_region = HPolyhedron(A,b)
+        elif robot_num == 4:
+            m1 = np.kron(key_robot_pattern, np.eye(robot_dof))
+            m2 = -m1
+            split_A[key_robot_index] = np.zeros(split_A[key_robot_index].shape)
+            A = np.hstack((split_A[0],split_A[1],split_A[2],split_A[3]))
+            A = np.vstack((A,m1,m2))
+            b = convex_region.b() - split_A_copy[key_robot_index] @ split_q[key_robot_index].transpose()
+            b = np.vstack((np.reshape(b, (r, 1)),np.reshape(split_q[key_robot_index], (robot_dof, 1)),-np.reshape(split_q[key_robot_index], (robot_dof, 1))))
+            refined_convex_region = HPolyhedron(A,b)
+            # ipdb.set_trace()
+        else:
+            refined_convex_region = convex_region
     else:
-        raise ValueError("Input must be [1, 0] or [0, 1]")
+        if robot_num == 2:
+            refined_convex_region = convex_region
+        elif robot_num == 4:
+            m1 = np.kron(key_robot_pattern, np.eye(robot_dof))
+            m2 = -m1
+            split_A[key_robot_index[0]] = np.zeros(split_A[key_robot_index[0]].shape)
+            split_A[key_robot_index[1]] = np.zeros(split_A[key_robot_index[1]].shape)
+            A = np.hstack((split_A[0],split_A[1],split_A[2],split_A[3]))
+            A = np.vstack((A,m1,m2))
+            b = convex_region.b() - split_A_copy[key_robot_index[0]] @ split_q[key_robot_index[0]] - split_A_copy[key_robot_index[1]] @ split_q[key_robot_index[1]]
+            b = np.vstack((np.reshape(b, (r, 1)),np.reshape(split_q[key_robot_index[0]], (robot_dof, 1)),np.reshape(split_q[key_robot_index[1]], (robot_dof, 1)),-np.reshape(split_q[key_robot_index[0]], (robot_dof, 1)),-np.reshape(split_q[key_robot_index[1]], (robot_dof, 1))))
+            refined_convex_region = HPolyhedron(A,b)
+            # ipdb.set_trace()
     
     return refined_convex_region
 
@@ -193,5 +211,84 @@ def show_robot(diagram, plant, visualizer, robot_num, object_num, object_init_po
             visualizer.ForcedPublish(visualizer_context)
 
         count = count + 1
+    visualizer.StopRecording()
+    visualizer.PublishRecording()
+    
+def show_robot_4_iiwa(diagram, plant, visualizer,robot_num, q_object1_init,q_object2_init,q_object3_init, q_object1_drop,q_object2_drop,q_object3_drop, path_with_gripper, vertex_array, iiwa_attach_frame):
+    q_object1 = dict()
+    q_object2 = dict()
+    q_object3 = dict()
+    q_iiwa_attach = dict()
+    end_index = 5
+    q_object1[0] = q_object1_init
+    q_object2[0] = q_object3_init
+    q_object3[0] = q_object2_init
+    q_object1[end_index] = q_object1_drop
+    q_object2[end_index] = q_object3_drop
+    q_object3[end_index] = q_object2_drop
+    dt = 0.02
+    t = 0
+    current_moving_object = 0
+    diagram_context = diagram.CreateDefaultContext()
+    plant_context = diagram.GetMutableSubsystemContext(plant, diagram_context)
+    visualizer.StartRecording()
+    visualizer_context = visualizer.GetMyContextFromRoot(diagram_context)
+    count = 0
+    q_index = 0
+    num_points = 50
+    for segment in path_with_gripper:
+        v = vertex_array[count]
+        if ("pick" in v) or ("place" in v):
+            num_points = 1
+        else:
+            num_points = 50
+        for s in np.linspace(segment.start_time(),segment.end_time(),num_points):
+            v = vertex_array[count]
+            q_robot = segment.value(s)
+            q_total = np.vstack((q_robot, q_object1[0],q_object2[0],q_object3[0]))
+            plant.SetPositions(plant_context, q_total)
+
+            # find the attach position in each robot
+            for i in range(robot_num):
+                iiwa_attach = plant.CalcRelativeTransform(plant_context, plant.world_frame(), iiwa_attach_frame[i])
+                q_iiwa_attach[i] = RigidTransform2Array(iiwa_attach)
+                q_object1[i+1] = q_iiwa_attach[i]
+                q_object2[i+1] = q_iiwa_attach[i]
+                q_object3[i+1] = q_iiwa_attach[i]
+                
+            # # find the convex region label
+            if "pick" in v:
+                if "object_1" in v:
+                    current_moving_object = 1
+                elif "object_2" in v:
+                    current_moving_object = 2
+                elif "object_3" in v:
+                    current_moving_object = 3
+                index = findIndex(v,'target')
+                q_index = index[0] + 1
+            elif "handover" in v and "connect" not in v:
+                index = findIndex(v,'handover')
+                q_index = index[1] + 1
+                if current_moving_object == 3:
+                    q_index = index[0] + 1
+            elif "place" in v:
+                index = findIndex(v,'target')
+                q_index = end_index
+                
+            q_object_real = np.vstack((q_object1[0],q_object2[0],q_object3[0]))
+            if current_moving_object == 1:
+                q_object_real = np.vstack((q_object1[q_index],q_object2[0],q_object3[0]))
+            elif current_moving_object == 2:
+                q_object_real = np.vstack((q_object1[end_index],q_object2[q_index],q_object3[0]))
+            elif current_moving_object == 3:
+                q_object_real = np.vstack((q_object1[end_index],q_object2[end_index],q_object3[q_index]))
+            q_total = np.vstack((q_robot, q_object_real))
+            plant.SetPositions(plant_context, q_total)
+            diagram_context.SetTime(t)
+            diagram.ForcedPublish(diagram_context)
+            visualizer.ForcedPublish(visualizer_context)
+            time.sleep(dt)
+            t += dt
+        count += 1
     visualizer.StopRecording()
     visualizer.PublishRecording()

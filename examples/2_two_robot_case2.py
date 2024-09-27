@@ -13,6 +13,7 @@ from hltl2gcs.transition_system import TransitionSystem
 from hltl2gcs.fa import FiniteAutomaton
 from hltl2gcs.support_functions import AddShape
 from hltl2gcs.support_functions import RigidTransform2Array, show_robot,construct_labeled_convex_region, construct_connected_convex_region_RRT,RefineRegion
+from rrt.rrt_2_iiwa_problem import IiwaProblem, rrt_planning
 
 SHOW_ROBOT = True
 # defined your mosek solver path
@@ -37,11 +38,25 @@ models = ProcessModelDirectives(directives, plant, parser)
 block1 = AddShape(
     plant, Box(0.2, 0.05, 0.05), "block1", mass= 1, mu = 1,color=[1, 0, 0, 1]
 )
-plant.SetDefaultFreeBodyPose(
-    plant.GetBodyByName("block1", block1),
-    RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[0, -0.5, 0.1]),
+if SHOW_ROBOT == True: 
+    plant.SetDefaultFreeBodyPose(
+        plant.GetBodyByName("block1", block1),
+        RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[0, -0.5, 0.1]),
+    )
+else:
+    plant.WeldFrames(
+        plant.world_frame(),
+        plant.GetFrameByName("block1", block1),
+        RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[0, -0.5, 0.1]),
+    )
+floor = AddShape(
+    plant, Box(1.5, 3, 0.1), "floor", mass= 1, mu = 1,color=[0.835, 0.835, 0.835, 1]
 )
-
+plant.WeldFrames(
+    plant.world_frame(),
+    plant.GetFrameByName("floor", floor),
+    RigidTransform(RotationMatrix(),[0, 0.75, -0.05]),
+)
 # add frame for visulzation
 iiwa_attach_frame = dict()
 for i in range(2):
@@ -52,15 +67,6 @@ for i in range(2):
         RigidTransform(RollPitchYaw(0,0, 0).ToRotationMatrix(),np.array([0.2,0,0])),
     )
 )
-floor = AddShape(
-    plant, Box(1.5, 3, 0.1), "floor", mass= 1, mu = 1,color=[0.835, 0.835, 0.835, 1]
-)
-plant.WeldFrames(
-    plant.world_frame(),
-    plant.GetFrameByName("floor", floor),
-    RigidTransform(RotationMatrix(),[0, 0.75, -0.05]),
-)
-
 # build plant and diagram
 plant.Finalize()
 ctrl = builder.AddSystem(ConstantVectorSource(np.zeros(plant.num_actuators())))
@@ -79,7 +85,6 @@ object_num = 1
 robot1_init = np.array([0,0,0,0,0,0,0])
 robot2_init = np.array([0,0,0,0,0,0,0])
 robot_init = np.concatenate((robot1_init,robot2_init))
-robot12_handover = np.array([ 1.57693503, -0.2936276 , -0.00756656, -1.38396305,  0.01131036,0.42412256,  0.00436817 , -1.45542816,-0.0833111 , -0.09918017, -1.1025703 , -0.03430604,  0.61549601, 0.00488511])
 joint_label = {
     'robot_init':  np.concatenate((robot1_init,robot2_init)),
     'robot1_in_target1': np.concatenate((np.array([ 1.68429808, -0.52752681, -0.14421902,  1.81495976,  0.09874811, -0.799605  ,  3.05432619]),robot2_init)),
@@ -117,34 +122,35 @@ else:
     specs.get_task_specification(task=args.task, case=args.case)
 
 # Construct labeled and connected convex sets using IRIS. This can be quite slow, so we do it offline and save the results. 
+iris_region_path = 'two_robot_case2'
 perform_iris_label = False
-if perform_iris_label:
-    construct_labeled_convex_region(diagram, plant, joint_label, 'two_robot_case2')
+if perform_iris_label and SHOW_ROBOT == False:
+    construct_labeled_convex_region(diagram, plant, joint_label, iris_region_path)
 
 perform_iris_connect = False
 keys_list = list(joint_label.keys())
 combinations_list = list(combinations(keys_list, 2))
 combinations_list.pop(1)       # remove value include both init and handover
-if perform_iris_connect:
-    construct_connected_convex_region_RRT(diagram, plant, joint_label, combinations_list, 'two_robot_case2')
+if perform_iris_connect and SHOW_ROBOT == False:
+    construct_connected_convex_region_RRT(diagram, plant, joint_label, combinations_list,  IiwaProblem, rrt_planning, iris_region_path)
 
 # Load and refined to labeled convex region
 S_iris = dict()
 S_label = dict()
 for name, configuration in joint_label.items():
-    with open(f"Iris_regions/two_robot_case2/{name}.pkl", "rb") as f:
+    with open(f"Iris_regions/{iris_region_path}/{name}.pkl", "rb") as f:
         S_iris[f'{name}'] = pickle.load(f)
 
 S_label['robot_init'] = S_iris['robot_init']
-S_label['robot1_in_target1'] = RefineRegion(S_iris['robot1_in_target1'], joint_label['robot1_in_target1'], robot_num, 0)
-S_label['robot2_in_target2'] = RefineRegion(S_iris['robot2_in_target2'], joint_label['robot2_in_target2'], robot_num, 1)
-S_label['robot12_handover'] = RefineRegion(S_iris['robot12_handover'], joint_label['robot12_handover'], robot_num, [0, 1])
+S_label['robot1_in_target1'] = RefineRegion(S_iris['robot1_in_target1'], joint_label['robot1_in_target1'], robot_num, np.array([1,0]),0)
+S_label['robot2_in_target2'] = RefineRegion(S_iris['robot2_in_target2'], joint_label['robot2_in_target2'], robot_num, np.array([0,1]),1)
+S_label['robot12_handover'] = RefineRegion(S_iris['robot12_handover'], joint_label['robot12_handover'], robot_num, [0, 1], True )
 
 # Load saved connected convex region
 S_connect = dict()
 for item in combinations_list:  # do I need conbined each other region
     name = f"{item[0]}_connect_{item[1]}"
-    with open(f"Iris_regions/two_robot_case2/{name}.pkl", "rb") as f:
+    with open(f"Iris_regions/{iris_region_path}/{name}.pkl", "rb") as f:
         S_connect[f'{name}'] = pickle.load(f)    
 
 # Construct a TransitionSystem

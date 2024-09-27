@@ -143,10 +143,10 @@ for name, configuration in joint_label.items():
         S_iris[f'{name}'] = pickle.load(f)
         
 S_label['robot_init'] = S_iris['robot_init']
-S_label['robot1_in_target1'] = RefineRegion(S_iris['robot1_in_target1'], joint_label['robot1_in_target1'], robot_num, 0)
-S_label['robot1_in_target2'] = RefineRegion(S_iris['robot1_in_target2'], joint_label['robot1_in_target2'], robot_num, 0)
-S_label['robot2_in_target1'] = RefineRegion(S_iris['robot2_in_target1'], joint_label['robot2_in_target1'], robot_num, 1)
-S_label['robot2_in_target2'] = RefineRegion(S_iris['robot2_in_target2'], joint_label['robot2_in_target2'], robot_num, 1)
+S_label['robot1_in_target1'] = RefineRegion(S_iris['robot1_in_target1'], joint_label['robot1_in_target1'], robot_num, np.array([1,0]),0)
+S_label['robot1_in_target2'] = RefineRegion(S_iris['robot1_in_target2'], joint_label['robot1_in_target2'], robot_num, np.array([1,0]),0)
+S_label['robot2_in_target1'] = RefineRegion(S_iris['robot2_in_target1'], joint_label['robot2_in_target1'], robot_num, np.array([0,1]),1)
+S_label['robot2_in_target2'] = RefineRegion(S_iris['robot2_in_target2'], joint_label['robot2_in_target2'], robot_num, np.array([0,1]),1)
 
 # Load saved connected convex region
 S_connect = dict()

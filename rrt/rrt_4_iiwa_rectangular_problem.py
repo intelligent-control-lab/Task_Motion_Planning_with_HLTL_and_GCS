@@ -35,10 +35,8 @@ class ManipulationStationSim:
         plant, scene_graph = AddMultibodyPlantSceneGraph(builder, time_step=1e-4)
         parser = Parser(plant)
 
-        parser.package_map().Add("drake_project", "/home/zhongqi/Documents/workspace/drake_env_1.28/")        # Setting the location of "drake_project"
-        # directives = LoadModelDirectives("/home/zhongqi/Documents/workspace/Task_Motion_Planning/GCS_planning/models/four_robot_close_hand_over_with_non-welded_hand.yaml")
-        # directives = LoadModelDirectives("/home/zhongqi/Documents/workspace/Task_Motion_Planning/GCS_planning/models/four_robot_close_hand_over_with_non-welded_hand.yaml")
-        directives = LoadModelDirectives("/home/zhongqi/Documents/workspace/Task_Motion_Planning/GCS_planning/models/four_robot_close_hand_over.yaml")
+        parser.package_map().Add("drake_project", "../")    
+        directives = LoadModelDirectives("models/four_iiwa_rectangular/four_robot_rectangular_no_gripper.yaml")
         models = ProcessModelDirectives(directives, plant, parser)
         plant.Finalize()
         # scenario = LoadScenario(filename=FindResource("models/four_iiwa.yaml"))
