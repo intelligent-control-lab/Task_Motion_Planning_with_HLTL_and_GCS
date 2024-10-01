@@ -524,12 +524,12 @@ class ShortestPathConstraints():
                                             vertex_parent_incoming.append(edges_ppparent_in[f][0])
                                         else:
                                             edges_pppparent_in, k_pppparent_in = graph.incoming_edges(edges_ppparent_in[f][0])
-                                        for g in range(len(edges_pppparent_in)):
-                                            if ('target' in edges_pppparent_in[g][0] and 'connect' not in edges_pppparent_in[g][0]) or ('handover' in edges_pppparent_in[g][0] and 'connect' not in edges_pppparent_in[g][0]):
-                                                n_incoming_parent_set = n_incoming_parent_set + 1
-                                                phi_parent_incoming.append(vars.phi[k_pppparent_in[g]])
-                                                vertex_parent_incoming.append(edges_pppparent_in[g][0])
-                                                # ipdb.set_trace()
+                                            for g in range(len(edges_pppparent_in)):
+                                                if ('target' in edges_pppparent_in[g][0] and 'connect' not in edges_pppparent_in[g][0]) or ('handover' in edges_pppparent_in[g][0] and 'connect' not in edges_pppparent_in[g][0]):
+                                                    n_incoming_parent_set = n_incoming_parent_set + 1
+                                                    phi_parent_incoming.append(vars.phi[k_pppparent_in[g]])
+                                                    vertex_parent_incoming.append(edges_pppparent_in[g][0])
+                                                    # ipdb.set_trace()
                     # print(vertex)
                 
                 

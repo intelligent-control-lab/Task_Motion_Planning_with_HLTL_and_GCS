@@ -9,7 +9,7 @@ import numpy as np
 
 sys.path.append("../")
 from hltl2gcs.support_functions import create_convexSet, generate_ConvexRegion
-from rrt.rrt_2d_problem import robot_2d_RRTProblem, rrt_planning
+from rrt.rrt_2d_problem_complex import robot_2d_RRTProblem, rrt_planning
 
 Draw_baseline = False
 run_rrt = True
@@ -23,7 +23,7 @@ builder = DiagramBuilder()
 plant, scene_graph = AddMultibodyPlantSceneGraph(builder, time_step=1e-4)
 parser = Parser(plant)
 parser.package_map().Add("manipulation", "models/2d_space")
-parser.AddModelsFromUrl("package://manipulation/simple_2d_cspace.xml")
+parser.AddModelsFromUrl("package://manipulation/complex_2d_cspace.xml")
 plant.Finalize()
 meshcat.Set2dRenderMode(xmin=0, xmax=1, ymin=0, ymax=1)
 viz = ConnectPlanarSceneGraphVisualizer(
@@ -45,8 +45,8 @@ plant.SetPositions(plant_context, q)
 diagram.ForcedPublish(diagram_context)
 
 # example case 1
-q_start_signle = np.array([0.5,2])
-q_goal_signle = np.array([3.5,2])
+q_start_signle = np.array([1,2.5])
+q_goal_signle = np.array([9.0,2.5])
 q_middle_signle = np.array([2,0.5])
 
 if run_rrt:
@@ -61,8 +61,7 @@ if run_rrt:
     path = np.array(path)
     solve_time = time.time() - solve_start_time
     hpoly_list = generate_ConvexRegion(diagram, plant, q_start_signle,q_goal_signle,path)
-    
-# ipdb.set_trace()
+
 if Draw_baseline == True:
     hpoly_baseline = []
     hpoly_baseline.append(create_convexSet(q_start_signle))
@@ -90,17 +89,17 @@ if run_GCS:
 fig, ax = plt.subplots()
 
 # Plot the plot area
-ax.set_xlim(0, 4)
+ax.set_xlim(0, 10)
 ax.set_ylim(0, 4)
 ax.set_xlabel('Width (m)')
 ax.set_ylabel('Height (m)')
-ax.set_title('4m x 4m Plot with Obstacle')
+ax.set_title('10m x 4m Plot with Obstacle')
 
 # Draw the obstacle as a rectangle 1
 # obstacle = plt.Rectangle((1.75, 1), 0.5, 2, color='red', alpha=0.5)
 
 # Draw the obstacle as a rectangle 2
-obstacle = plt.Rectangle((2, 1.28), 1, 1, color='red', alpha=0.5,angle=45)
+obstacle = plt.Rectangle((1, 1), 2, 1, color='red', alpha=0.5,angle=0)
 
 ax.add_patch(obstacle)
 
@@ -123,7 +122,7 @@ plt.axvline(0, color='black',linewidth=0.5)
 plt.gca().set_aspect('equal', adjustable='box')
 
 # ipdb.set_trace()
-xlim = (0, 4)
+xlim = (0, 10)
 ylim = (0, 4)
 x = np.linspace(xlim[0], xlim[1], 400)
 y = np.linspace(ylim[0], ylim[1], 400)

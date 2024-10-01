@@ -125,7 +125,7 @@ else:
     specs.get_task_specification(task=args.task, case=args.case)
 
 # Construct labeled and connected convex sets using IRIS. This can be quite slow, so we do it offline and save the results. 
-perform_iris_label = True
+perform_iris_label = False
 if perform_iris_label and SHOW_ROBOT == False:
     construct_labeled_convex_region(diagram, plant, joint_label, 'two_robot_case1')
 
@@ -176,7 +176,6 @@ dfa = FiniteAutomaton(specs, args)
 dfa_time = time.time() - dfa_start_time
 order = 2
 continuity = 1
-product_start_time = time.time()
 bgcs = ts.Product(dfa, robot_init, order, continuity,is_handover, connect_label, args)
 
 # solve the GCS 

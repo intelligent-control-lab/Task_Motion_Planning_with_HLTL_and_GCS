@@ -76,8 +76,8 @@ def construct_labeled_convex_region(diagram, plant, joint_label,path):
         iris_options = IrisOptions()
         iris_options.require_sample_point_is_contained = True
         iris_options.iteration_limit = 1
-        iris_options.termination_threshold = 2e-2
-        iris_options.relative_termination_threshold = 2e-2
+        iris_options.termination_threshold = 2e-1
+        iris_options.relative_termination_threshold = 2e-1
         iris_options.num_collision_infeasible_samples = 1
         
         start_time = time.time()
@@ -87,7 +87,7 @@ def construct_labeled_convex_region(diagram, plant, joint_label,path):
         with open(f"Iris_regions/{path}/{name}.pkl", "wb") as f:
             pickle.dump(hpoly,f)
 
-def construct_connected_convex_region_RRT(diagram, plant, joint_label, combinations_list, IiwaProblem, rrt_planning, path):
+def construct_connected_convex_region_RRT(diagram, plant, joint_label, combinations_list, IiwaProblem, rrt_planning, file_path):
     for item in combinations_list:
         q_start = joint_label[item[0]]
         q_goal= joint_label[item[1]]
@@ -95,7 +95,7 @@ def construct_connected_convex_region_RRT(diagram, plant, joint_label, combinati
         path = rrt_planning(iiwa_problem, 1000, 0.05)
         hpoly_list = generate_ConvexRegion(diagram, plant, q_start,q_goal,path)
         name = f"{item[0]}_connect_{item[1]}"
-        with open(f"Iris_regions/{path}/{name}.pkl", "wb") as f:
+        with open(f"Iris_regions/{file_path}/{name}.pkl", "wb") as f:
             pickle.dump(hpoly_list,f)
 
 def findIndex(data, target):
@@ -290,5 +290,44 @@ def show_robot_4_iiwa(diagram, plant, visualizer,robot_num, q_object1_init,q_obj
             time.sleep(dt)
             t += dt
         count += 1
+    visualizer.StopRecording()
+    visualizer.PublishRecording()
+
+
+def write_path_file(diagram, plant, visualizer, path, vertex_array):
+    diagram_context = diagram.CreateDefaultContext()
+    plant_context = diagram.GetMutableSubsystemContext(plant, diagram_context)
+    count = 0
+    time_step = 0.1
+    visualizer_context = visualizer.GetMyContextFromRoot(diagram_context)
+    file_num = 0
+    v_before = []
+    for trajectory in path:
+        v = vertex_array[count]
+        # defined the gripper position
+        if "pick" in v and "target" in v:
+            index = findIndex(v,'pick')
+            file_num = file_num + 1
+        elif "handover" in v:
+            index = findIndex(v,'handover')
+            file_num = file_num + 1
+        elif "place" in v and "target" in v:
+            index = findIndex(v,'place')
+            file_num = file_num + 1
+
+        filename = f'../media/wx200_handover_trajectory{file_num}.txt'
+
+        for t in np.append(np.arange(trajectory.start_time(), trajectory.end_time(), time_step),trajectory.end_time()):
+            diagram_context.SetTime(t)
+            plant.SetPositions(plant_context, trajectory.value(t))
+            
+            # Open the file in append mode and save the array
+            with open(filename, 'a') as f:
+                np.savetxt(f, trajectory.value(t).reshape(1, -1), fmt='%f')
+            
+            visualizer.ForcedPublish(visualizer_context)
+        v_before = v
+        count += 1
+        
     visualizer.StopRecording()
     visualizer.PublishRecording()

@@ -1,0 +1,53 @@
+directives:
+
+# Add wx200_2
+- add_model:
+    name: wx200_1
+    file: package://drake_project/../Task_Motion_Planning/GCS_planning/models/wx200_description/wx200_back.urdf
+
+- add_frame:
+    name: wx200_1_origin
+    X_PF:
+      base_frame: world
+      translation: [0.5, 0, 0]
+
+- add_weld:
+    parent: wx200_1_origin
+    child: wx200_1::wx200_base_link
+
+# Add wx200_2
+- add_model:
+    name: wx200_2
+    file: package://drake_project/../Task_Motion_Planning/GCS_planning/models/wx200_description/wx200_back.urdf
+
+- add_frame:
+    name: wx200_2_origin
+    X_PF:
+      base_frame: world
+      translation: [0.5, 0.5, 0]
+
+- add_weld:
+    parent: wx200_2_origin
+    child: wx200_2::wx200_base_link
+
+- add_model:
+    name: wx200_3
+    file: package://drake_project/../Task_Motion_Planning/GCS_planning/models/wx200_description/wx200_back.urdf
+- add_weld:
+    parent: world
+    child: wx200_3::wx200_base_link
+
+# Add wx200_2
+- add_model:
+    name: wx200_4
+    file: package://drake_project/../Task_Motion_Planning/GCS_planning/models/wx200_description/wx200_back.urdf
+
+- add_frame:
+    name: wx200_4_origin
+    X_PF:
+      base_frame: world
+      translation: [0, 0.5, 0]
+
+- add_weld:
+    parent: wx200_4_origin
+    child: wx200_4::wx200_base_link

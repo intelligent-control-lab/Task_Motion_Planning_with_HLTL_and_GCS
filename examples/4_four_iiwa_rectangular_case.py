@@ -226,7 +226,7 @@ S_label['robot34_handover'] = RefineRegion(S_iris['robot34_handover'], joint_lab
 
 # Load saved connected convex region
 S_connect = dict()
-for item in combinations_list:  # do I need conbined each other region
+for item in combinations_list: 
     name = f"{item[0]}_connect_{item[1]}"
     with open(f"Iris_regions/{iris_region_path}/{name}.pkl", "rb") as f:
         S_connect[f'{name}'] = pickle.load(f)    

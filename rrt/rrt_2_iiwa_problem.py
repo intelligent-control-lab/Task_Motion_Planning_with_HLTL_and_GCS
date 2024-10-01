@@ -15,17 +15,14 @@ from pydrake.all import (
 )
 from pydrake.multibody import inverse_kinematics
 import sys
-sys.path.append('../../manipulation/')
-from manipulation import running_as_notebook
-from manipulation.exercises.trajectories.rrt_planner.robot import (
+sys.path.append("../")
+from rrt.robot import (
     ConfigurationSpace,
     Range,
 )
-from manipulation.exercises.trajectories.rrt_planner.rrt_planning import Problem
-from manipulation.meshcat_utils import AddMeshcatTriad
-from manipulation.station import LoadScenario, MakeHardwareStation
-from manipulation.utils import FindResource
+from rrt.rrt_planning import Problem
 import ipdb
+
 meshcat = StartMeshcat()
 
 class ManipulationStationSim:

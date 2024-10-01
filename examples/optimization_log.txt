@@ -2,50 +2,40 @@ Problem
   Name                   :                 
   Objective sense        : minimize        
   Type                   : CONIC (conic optimization problem)
-  Constraints            : 156463          
-  Affine conic cons.     : 118 (3422 rows)
+  Constraints            : 10088           
+  Affine conic cons.     : 10 (290 rows)
   Disjunctive cons.      : 0               
   Cones                  : 0               
-  Scalar variables       : 10690           
+  Scalar variables       : 910             
   Matrix variables       : 0               
-  Integer variables      : 719             
+  Integer variables      : 65              
 
 Optimizer started.
 Mixed integer optimizer started.
 Threads used: 24
 Presolve started.
-Presolve terminated. Time = 2.14, probing time =  0.06
-Presolved problem: 4703 variables, 91869 constraints, 2179002 non-zeros
-Presolved problem: 0 general integer, 5 binary, 4698 continuous
-Presolved problem: 92 cones
-Clique table size: 2
-Symmetry factor  : 0.01 (detection time = 0.44)
+Presolve terminated. Time = 0.02, probing time =  0.00
+Clique table size: 0
 BRANCHES RELAXS   ACT_NDS  DEPTH    BEST_INT_OBJ         BEST_RELAX_OBJ       REL_GAP(%)  TIME  
-0        1        1        0        NA                   1.6302733515e+01     NA          3.5   
-0        1        1        0        1.6302473341e+01     1.6302473341e+01     0.00e+00    7.5   
-An optimal solution satisfying the relative gap tolerance of 1.00e-02(%) has been located.
-The relative gap is 0.00e+00(%).
-An optimal solution satisfying the absolute gap tolerance of 0.00e+00 has been located.
-The absolute gap is 0.00e+00.
 
-Objective of best integer solution : 1.630247334082e+01      
-Best objective bound               : 1.630247334082e+01      
+Objective of best integer solution : Not available.
+Best objective bound               : Not available.
 Initial feasible solution objective: Undefined
 Construct solution objective       : Not employed
 User objective cut value           : Not employed
 Number of cuts generated           : 0
 Number of branches                 : 0
-Number of relaxations solved       : 1
-Number of interior point iterations: 24
+Number of relaxations solved       : 0
+Number of interior point iterations: 0
 Number of simplex iterations       : 0
-Time spend presolving the root     : 2.14
-Time spend optimizing the root     : 0.97
-Mixed integer optimizer terminated. Time: 7.53
+Time spend presolving the root     : 0.02
+Time spend optimizing the root     : 0.00
+Mixed integer optimizer terminated. Time: 0.03
 
-Optimizer terminated. Time: 7.54    
+Optimizer terminated. Time: 0.04    
 
 
 Integer solution solution summary
-  Problem status  : PRIMAL_FEASIBLE
-  Solution status : INTEGER_OPTIMAL
-  Primal.  obj: 1.6302473341e+01    nrm: 2e+01    Viol.  con: 9e-10    var: 0e+00    acc: 6e-09    itg: 0e+00  
+  Problem status  : PRIMAL_INFEASIBLE
+  Solution status : UNKNOWN
+  Primal.  obj: 0.0000000000e+00    nrm: 0e+00    Viol.  con: 1e+00    var: 0e+00    acc: 0e+00    itg: 0e+00  
