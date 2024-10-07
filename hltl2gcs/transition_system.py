@@ -166,7 +166,7 @@ class TransitionSystem(DirectedGraph):
             self.partitions[vertex_index] = self.target_vertices_set[i]
             self.labels[vertex_index] = self.target_labels[i]
             self.v_idx += 1
-        
+        # ipdb.set_trace()
         connection_dict= dict()
         # # Iterate over pairwise combinations
         for pair in list(combinations(self.target_vertices, 2)):
@@ -178,12 +178,13 @@ class TransitionSystem(DirectedGraph):
             l2 = self.labels[v2]
             index1 = self.findIndex(f'{l1}','target')
             index2 = self.findIndex(f'{l2}','target')
-            # ipdb.set_trace()
+
             if index1[0] == index2[0]:                          # two different region is belone to same robot
                 dict_1 = self.AddEdgewithConnectionRRT(v1,v2)
                 connection_dict.update(dict_1)
                 dict_1 = self.AddEdgewithConnectionRRT(v2,v1)
                 connection_dict.update(dict_1)
+                # ipdb.set_trace()
             elif l1[index1[0]] == l2[index2[0]]:                # same region is belone to two different robot
                 dict_1 = self.AddEdgewithConnectionRRT(v1,v2)
                 connection_dict.update(dict_1)
@@ -194,6 +195,7 @@ class TransitionSystem(DirectedGraph):
                 current_handover_region = str(sorted_nums[0][0]+1) + str(sorted_nums[1][0]+1)
                 dict_1 = self.AddEdgewithConnectionRRT(v1,v2)
                 dict_2 = self.AddEdgewithHandoverConnectionRRT(v1,v2)
+                # ipdb.set_trace()
                 if any(value == [] for value in dict_2.values()):
                     dict_3 = dict_1
                 else:
@@ -207,7 +209,6 @@ class TransitionSystem(DirectedGraph):
                     dict_3 = {k: dict_1[k] + dict_2[k] for k in dict_1}
                 connection_dict.update(dict_3)
 
-        # ipdb.set_trace()
         self.AddEdgewithConnectionToInitRRT()
         # add edge for self loop 
         for v in self.target_vertices:
@@ -215,18 +216,6 @@ class TransitionSystem(DirectedGraph):
             self.edges.append(edge)
         
         return connection_dict
-        
-    # def AddEdgesFromIntersections(self):
-    #     """
-    #     Add transitions between all partitions that have some non-empty
-    #     intersection. 
-    #     """
-    #     for v1 in self.vertices:
-    #         for v2 in self.vertices:
-    #             r1 = self.partitions[v1]
-    #             r2 = self.partitions[v2]
-    #             if r1.IntersectsWith(r2) and (v1 != v2):
-    #                 self.AddEdge(v1, v2)
 
     def AddEdgewithConnectionRRT(self, source_vertex, target_vertex):
         """

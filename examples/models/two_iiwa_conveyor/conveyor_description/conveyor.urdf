@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<robot name="Table">
+    <link name="table_base">
+        <visual name="Table">
+            <origin rpy="0 0 0" xyz="0 0 0" />
+            <geometry>
+                <mesh filename="package://drake_project/../Task_Motion_Planning_with_HLTL_and_GCS/examples/models/two_iiwa_conveyor/conveyor_description/conveyor.obj" />
+            </geometry>
+            <material name="table_base_material">
+                <color rgba="1.000000 1.000000 1.000000 1.0" />
+            </material>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0 0 0" />
+            <geometry>
+                <mesh filename="package://drake_project/../Task_Motion_Planning_with_HLTL_and_GCS/examples/models/two_iiwa_conveyor/conveyor_description/conveyor.obj" />
+            </geometry>
+        </collision>
+    </link>
+</robot>

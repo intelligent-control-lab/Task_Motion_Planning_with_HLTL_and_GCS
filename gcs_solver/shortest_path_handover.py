@@ -47,10 +47,9 @@ class ShortestPathVariables():
         
         left_gripper_open = -0.06 * np.ones([graph.order+1,1])
         right_gripper_open = 0.06 * np.ones([graph.order+1,1])
-        
+        control_points_open_gripper = np.hstack([left_gripper_open,right_gripper_open])
         left_gripper_close = -0.025 * np.ones([graph.order+1,1])
         right_gripper_close = 0.025 * np.ones([graph.order+1,1])
-        control_points_open_gripper = np.hstack([left_gripper_open,right_gripper_open])
         control_points_close_gripper = np.hstack([left_gripper_close,right_gripper_close])
             
         control_points_gripper = dict()
@@ -186,7 +185,6 @@ class ShortestPathVariables():
                 v = v_next
                 
                 count = count + 1
-
 
             return besize_curves[1:],  valid_edge , besize_curves_gripper[1:],vertex_array
 

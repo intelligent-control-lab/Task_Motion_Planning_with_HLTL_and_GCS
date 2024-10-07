@@ -12,10 +12,10 @@ from hltl2gcs.specification import Specification
 from hltl2gcs.transition_system import TransitionSystem
 from hltl2gcs.fa import FiniteAutomaton
 from hltl2gcs.support_functions import AddShape
-from hltl2gcs.support_functions import RigidTransform2Array,show_robot_4_iiwa,findIndex, construct_labeled_convex_region, construct_connected_convex_region_RRT,RefineRegion
+from hltl2gcs.support_functions import RigidTransform2Array,show_robot_4_iiwa1,findIndex, construct_labeled_convex_region, construct_connected_convex_region_RRT,RefineRegion
 from rrt.rrt_4_iiwa_linear_problem import IiwaProblem, rrt_planning
 
-SHOW_ROBOT = False
+SHOW_ROBOT = True
 # defined your mosek solver path
 os.environ["MOSEKLM_LICENSE_FILE"] = "/opt/mosek/mosek.lic"   
 
@@ -107,10 +107,7 @@ diagram = builder.Build()
 diagram_context = diagram.CreateDefaultContext()
 plant_context = diagram.GetMutableSubsystemContext(plant, diagram_context)
 context = diagram.CreateDefaultContext()
-# q = np.zeros([plant.num_positions()])
-# plant.SetPositions(plant_context, q)
-# diagram.ForcedPublish(diagram_context)
-# ipdb.set_trace()
+
 # user defined atomic propositions and GCS label
 robot_num = 4
 object_num = 3 
@@ -150,14 +147,9 @@ gcs_label = {
     'robot4_in_target4': [[""], [""],[""],["target_4"]],
     'robot4_in_target5': [[""], [""], [""], ["target_5"]],
     'robot4_in_target6': [[""], [""],[""],["target_6"]],
-    'robot12_handover': [["handover"], ["handover"],[""],[""]],
-    'robot23_handover': [[""], ["handover"],["handover"],[""]],
-    'robot34_handover': [[""], [""],["handover"],["handover"]],
+    'robot14_handover': [["handover"], [""],[""],["handover"]],
 }
-# q = np.zeros([plant.num_positions()])
-# plant.SetPositions(plant_context, joint_label['robot4_in_target5'])
-# diagram.ForcedPublish(diagram_context)
-# ipdb.set_trace()
+
 # user define H-LTL Specification
 spec100 = "(F (target_1_pick_object_1 & F (target_4_place_object_1)))"
 spec200 = "(F (target_2_pick_object_2 & F (target_5_place_object_2)))"
@@ -188,12 +180,12 @@ if perform_iris_label:
 perform_iris_connect = False
 keys_list = list(joint_label.keys())
 combinations_list = list(combinations(keys_list[:7], 2))        # to reduce some combinations if robot is never reach that regions
-# combinations_list = [('robot_init', 'robot1_in_target1'),('robot_init', 'robot1_in_target2'),('robot_init', 'robot1_in_target3'),('robot_init', 'robot4_in_target4'),('robot_init', 'robot4_in_target5'),('robot_init', 'robot4_in_target6') ]
-combinations_handover_list = [('robot1_in_target1', 'robot12_handover'),('robot1_in_target2', 'robot12_handover'),('robot1_in_target3', 'robot12_handover'),
-                              ('robot12_handover', 'robot23_handover'),('robot23_handover', 'robot34_handover'),('robot34_handover', 'robot4_in_target4'),('robot34_handover', 'robot4_in_target5'), ('robot34_handover', 'robot4_in_target6')]
-combinations_list = combinations_list + combinations_handover_list      
-# combinations_list = combinations_handover_list
-combinations_list = combinations_list
+combinations_handover_list = [
+                              ('robot1_in_target1', 'robot14_handover'),('robot1_in_target2', 'robot14_handover'),('robot1_in_target3', 'robot14_handover'),
+                              ('robot14_handover', 'robot4_in_target4'),('robot14_handover', 'robot4_in_target5'), ('robot14_handover', 'robot4_in_target6')
+                              ]
+combinations_list = combinations_list + combinations_handover_list     
+
 if perform_iris_connect:
     construct_connected_convex_region_RRT(diagram, plant, joint_label, combinations_list, IiwaProblem, rrt_planning, iris_region_path)
 
@@ -214,19 +206,19 @@ S_label['robot4_in_target6'] = RefineRegion(S_iris['robot4_in_target6'], joint_l
 S_label['robot12_handover'] = RefineRegion(S_iris['robot12_handover'], joint_label['robot12_handover'], robot_num, np.array([[1,0,0,0],[0,1,0,0]]), [0,1],True)
 S_label['robot23_handover'] = RefineRegion(S_iris['robot23_handover'], joint_label['robot23_handover'], robot_num, np.array([[0,1,0,0],[0,0,1,0]]), [1,2],True)
 S_label['robot34_handover'] = RefineRegion(S_iris['robot34_handover'], joint_label['robot34_handover'], robot_num, np.array([[0,0,1,0],[0,0,0,1]]), [2,3],True)
-
+S_label['robot14_handover'] = RefineRegion(S_iris['robot34_handover'], joint_label['robot34_handover'], robot_num, np.array([[0,0,1,0],[0,0,0,1]]), [2,3],True)
 # test
 # for item in combinations_list:  # do I need conbined each other region
 #     hpoly_list = []
 #     name = f"{item[0]}_connect_{item[1]}"
 #     hpoly_list.append(S_iris[f'{item[0]}'])
 #     hpoly_list.append(S_iris[f'{item[1]}'])
+#     hpoly_list.append(S_label[f'{item[1]}'])
 #     with open(f"Iris_regions/{iris_region_path}/{name}.pkl", "wb") as f:
 #         pickle.dump(hpoly_list,f)
 #     with open(f"Iris_regions/{iris_region_path}/{name}.pkl", "rb") as f:
 #         S_iris[f'{name}'] = pickle.load(f)
 
-# ipdb.set_trace()
 # Load saved connected convex region
 S_connect = dict()
 for item in combinations_list: 
@@ -243,17 +235,15 @@ ts.AddPartition(S_label['robot1_in_target2'], [["target_2"], [""], [""], [""]])
 ts.AddPartition(S_label['robot1_in_target3'], [["target_3"], [""],[""],[""]]) 
 ts.AddPartition(S_label['robot4_in_target4'], [[""], [""],[""], ["target_4"]])
 ts.AddPartition(S_label['robot4_in_target5'], [[""], [""], [""], ["target_5"]]) 
-ts.AddPartition(S_label['robot4_in_target6'], [[""], [""],[""],["target_6"]]) 
-ts.AddPartition(S_label['robot12_handover'], [["handover"], ["handover"],[""],[""]])
-ts.AddPartition(S_label['robot23_handover'], [[""], ["handover"],["handover"],[""]])
-ts.AddPartition(S_label['robot34_handover'], [[""],[""], ["handover"],["handover"]])
+ts.AddPartition(S_label['robot4_in_target6'], [[""], [""],[""],["target_6"]])
+ts.AddPartition(S_label['robot14_handover'], [["handover"], [""],[""],["handover"]])
 
 for item in combinations_list:  # do I need conbined each other region
     name = f"{item[0]}_connect_{item[1]}"
     label = f"{gcs_label[item[0]]}_connect_{gcs_label[item[1]]}"
     for i in range(len(S_connect[f'{name}'])):
         ts.AddPartition(S_connect[f'{name}'][i], [[f"{label}_{i}"], [f"{label}_{i}"]])
-
+# ipdb.set_trace()
 connect_label = ts.AddEdgesFromRRT()
 
 dfa_start_time = time.time()
@@ -267,22 +257,24 @@ bgcs = ts.Product(dfa, robot_init, order, continuity, is_handover, connect_label
 
 # python gcs planning code 
 path, path_with_gripper, vertex_array = bgcs.SolveShortestPath()
-ipdb.set_trace()
+
 # show robot in meshcat
 if SHOW_ROBOT == True:
     q_object1_init = RigidTransform2Array(RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[0, -0.52, 0.1]))
-    q_object2_init = RigidTransform2Array(RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[1.0, -0.52, 0.1]))
-    q_object3_init = RigidTransform2Array(RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[0.5, -0.52, 0.1]))
+    q_object2_init = RigidTransform2Array(RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[-0.25, -0.52, 0.1]))
+    q_object3_init = RigidTransform2Array(RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[0.25, -0.52, 0.1]))
 
-    q_object1_drop = RigidTransform2Array(RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[0.8, 1.8, 0.1]))
-    q_object2_drop = RigidTransform2Array(RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[0, 1.8, 0.1]))
-    q_object3_drop = RigidTransform2Array(RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[1.3, 1.8, 0.1]))
+    q_object1_drop = RigidTransform2Array(RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[0, 4.42, 0.1]))
+    q_object2_drop = RigidTransform2Array(RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[-0.25, 4.42, 0.1]))
+    q_object3_drop = RigidTransform2Array(RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[0.25, 4.42, 0.1]))
     
-    show_robot_4_iiwa(diagram, plant, visualizer,robot_num, q_object1_init,q_object2_init,q_object3_init, q_object1_drop,q_object2_drop,q_object3_drop, path_with_gripper, vertex_array, iiwa_attach_frame)
+    show_robot_4_iiwa1(diagram, plant, visualizer,robot_num, q_object1_init,q_object2_init,q_object3_init, q_object1_drop,q_object2_drop,q_object3_drop, path_with_gripper, vertex_array, iiwa_attach_frame)
     
     html_str = meshcat.StaticHtml()
-    file_path = "../media/four_robot_close_three_object_hand_over.html"
+    file_path = "../media/four_iiwa_linear.html"
     with open(file_path, "w") as html_file:
         html_file.write(html_str)
+        
 while 1:
+    ipdb.set_trace()
     a = 0
