@@ -67,7 +67,7 @@ directives:
 # Add conveyor
 - add_model:
     name: conveyor_fixed
-    file: package://drake_project/../Task_Motion_Planning/GCS_planning/models/conveyor_description/conveyor.urdf
+    file: package://drake_project/../Task_Motion_Planning_with_HLTL_and_GCS/examples/models/two_iiwa_conveyor/conveyor_description/conveyor.urdf
 
 - add_frame:
     name: conveyor_origin

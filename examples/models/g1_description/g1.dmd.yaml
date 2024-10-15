@@ -5,10 +5,10 @@ directives:
 # Add iiwa_1
 - add_model:
     name: g_1
-    # file: package://drake_project/../Task_Motion_Planning_with_HLTL_and_GCS/examples/models/g1_description/g1_29dof_with_hand.urdf
+    file: package://drake_project/../Task_Motion_Planning_with_HLTL_and_GCS/examples/models/g1_description/g1_29dof_with_hand.urdf
     # file: package://drake_project/../Task_Motion_Planning_with_HLTL_and_GCS/examples/models/g1_description/g1_29dof.urdf
     # file: package://drake_project/../Task_Motion_Planning_with_HLTL_and_GCS/examples/models/g1_description/g1_14dof.urdf
-    file: package://drake_project/../Task_Motion_Planning_with_HLTL_and_GCS/examples/models/g1_description/g1_14dof_with_hand.urdf
+    # file: package://drake_project/../Task_Motion_Planning_with_HLTL_and_GCS/examples/models/g1_description/g1_14dof_with_hand.urdf
 - add_weld:
     parent: world
     child: g_1::pelvis

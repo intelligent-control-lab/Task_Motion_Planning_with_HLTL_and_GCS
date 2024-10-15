@@ -33,7 +33,7 @@ class TransitionSystem(DirectedGraph):
         - Labels for each state
         - A convex set for each state
     """
-    def __init__(self, n,robot_num, object_num):
+    def __init__(self, n,robot_num, object_num, OPT_TIME = False):
         """
         Construct an (empty) transition system.
 
@@ -76,6 +76,8 @@ class TransitionSystem(DirectedGraph):
         self.num_robot = robot_num
         self.num_object = object_num
         self.reverse = False
+        self.OPT_TIME = OPT_TIME
+
     def findIndex(self, data, target):
 
         lists_str = data.split(',')
@@ -178,7 +180,6 @@ class TransitionSystem(DirectedGraph):
             l2 = self.labels[v2]
             index1 = self.findIndex(f'{l1}','target')
             index2 = self.findIndex(f'{l2}','target')
-
             if index1[0] == index2[0]:                          # two different region is belone to same robot
                 dict_1 = self.AddEdgewithConnectionRRT(v1,v2)
                 connection_dict.update(dict_1)
@@ -235,7 +236,7 @@ class TransitionSystem(DirectedGraph):
         l1 = self.labels[source_vertex]
         l2 = self.labels[target_vertex]
         connect_key = (str(l1),str(l2))
-        
+        # ipdb.set_trace()
         connect_index = []
         name = f"{l1}_connect_{l2}"
         # add vertex for forward target labeled
@@ -335,9 +336,21 @@ class TransitionSystem(DirectedGraph):
             ['handover'] if item[0] != '' else ['']
             for item in merged_list
         ]
+        
+        
+        # hard code only for conveyor case:[changed later]
+        if str(l1) == "[['target_1'], [''], ['']]":
+            handover_label = [['handover1'], ['handover1'],['']]
+        elif str(l1) == "[['target_2'], [''], ['']]":
+            handover_label = [['handover2'], ['handover2'],['']]
+        elif str(l1) == "[['target_3'], [''], ['']]":
+            handover_label = [['handover3'], ['handover3'],['']]
+        
+        # ipdb.set_trace()
         connect_index = []
 
         name = f"{l1}_connect_{handover_label}"
+
         # add vertex for forward target labeled for l1 to handover
         for i, sublist in enumerate(self.target_connection_labels):
             if name in str(sublist):
@@ -355,6 +368,7 @@ class TransitionSystem(DirectedGraph):
             # add a handover vertex
             for i, sublist in enumerate(self.handover_labels):
                 if str(handover_label) in str(sublist):
+                    # ipdb.set_trace()
                     connection_vertex_index = self.v_idx
                     self.vertices.append(connection_vertex_index)
                     self.partitions[connection_vertex_index] = self.handover_vertices_set[i]
@@ -789,7 +803,7 @@ class TransitionSystem(DirectedGraph):
         #         end_vertex, start_point, order, continuity)
         # new code
         bgcs = BezierGraphOfConvexSetsHandover(prod_vertices, edges, regions, prod_states, essential_veretx, self.labels, fa.labels, start_vertex,
-                    end_vertex, start_point, order, continuity, self.num_robot, self.num_object, is_handover)
+                    end_vertex, start_point, order, continuity, self.num_robot, self.num_object, is_handover, self.OPT_TIME)
         
         # c++ version trajectory optimization
         # region_num = len(self.vertices)

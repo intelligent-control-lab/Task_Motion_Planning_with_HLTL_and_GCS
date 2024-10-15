@@ -7,8 +7,6 @@ sys.path.append("../")
 from gcs_solver.graph import GraphOfConvexSets as GraphOfConvexSetsSolver
 from gcs_solver.shortest_path_handover import ShortestPathProblem
 
-OPT_TIME = False
-
 class BezierGraphOfConvexSetsHandover(DirectedGraph):
     """
     Problem setup and solver for planning a piecewise bezier curve trajectory
@@ -25,7 +23,7 @@ class BezierGraphOfConvexSetsHandover(DirectedGraph):
     """
     def __init__(self, vertices, edges, regions,gcs_vertices_to_product_vertices,essential_veretx,
                 ts_labels, fa_labels, start_vertex, end_vertex,
-                 start_point, order=5, continuity=3, robot_num = 0, object_num = 0, is_handover = 0):
+                 start_point, order=5, continuity=3, robot_num = 0, object_num = 0, is_handover = 0, OPT_TIME = False):
         """
         Construct a graph of convex sets
 
@@ -165,13 +163,8 @@ class BezierGraphOfConvexSetsHandover(DirectedGraph):
         self.G.start_point = self.start_point
         self.G.state_dim = self.regions[v].ambient_dimension()   # one state dimension
         self.G.dimension = self.gcs_region[0].ambient_dimension()   # one region decision variable dimension
-        # graph = self.G.graphviz()
-        # graph.render(filename='graph', format='png', cleanup=True)
-        # graph.view()    
-        
-        # ipdb.set_trace()
-        self.spp = ShortestPathProblem(self.G, relaxation=0, is_hand_over = is_handover)
-        # ipdb.set_trace()
+
+        self.spp = ShortestPathProblem(self.G, relaxation=0, is_hand_over = is_handover, OPT_TIME = OPT_TIME)
 
     def AddLengthCost(self, weight=1.0, norm="L2"):
         """
@@ -196,7 +189,7 @@ class BezierGraphOfConvexSetsHandover(DirectedGraph):
         """
         assert norm in ["L1", "L2", "L2_squared"], "invalid length norm"
 
-    def SolveShortestPath(self):
+    def SolveShortestPath(self, OPT_TIME = False):
         """
         Solve the shortest path problem (self.gcs).
 
@@ -217,7 +210,7 @@ class BezierGraphOfConvexSetsHandover(DirectedGraph):
         graph.render(filename='graph_before', format='png', cleanup=True)
         # graph.view()  
         print("start")
-        path, valid_edge, w_var, path_with_gripper,vertex_array = self.spp.solve()    
+        path, valid_edge, w_var, path_with_gripper,vertex_array = self.spp.solve(OPT_TIME)    
         
         # orignial graph    
         graph = self.G.graphviz(valid_edge = valid_edge, w_var = w_var)

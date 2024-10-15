@@ -7,10 +7,10 @@ sys.path.append("../")
 
 from hltl2gcs.support_functions import AddShape
 
-# with open(f"Iris_region_four_robot_close_hand_over/q1_pick_region_fixed.pkl", "rb") as f:
-with open(f"Iris_region_four_robot_close_hand_over/q1_pick.pkl", "rb") as f:
+# with open(f"Iris_regions/four_iiwa_rectangular/robot1_in_target1_fixed.pkl", "rb") as f:
+with open(f"Iris_regions/four_iiwa_rectangular/robot1_in_target1.pkl", "rb") as f:
     region = pickle.load(f) 
-
+    
 def DrawRobot(query_object: QueryObject, meshcat_prefix: str, draw_world: bool = True):
     rgba = Rgba(0.7, 0.7, 0.7, 0.3)
     role = Role.kProximity
@@ -71,14 +71,14 @@ directives = LoadModelDirectives("/home/zhongqi/Documents/workspace/Task_Motion_
 models = ProcessModelDirectives(directives, plant, parser)
 
 # add target 1  
-# ball = AddShape(
-#     plant, Sphere(0.1), "ball", mass= 1, mu = 1,color=[0, 0, 1, 1]
-# )
-# plant.WeldFrames(
-#     plant.world_frame(),
-#     plant.GetFrameByName("ball", ball),
-#     RigidTransform(RotationMatrix(),[0.0, -0.5, 0.2]),
-# )
+ball = AddShape(
+    plant, Box(0.15,0.15,0.15), "ball", mass= 1, mu = 1,color=[1, 0, 0, 1]
+)
+plant.WeldFrames(
+    plant.world_frame(),
+    plant.GetFrameByName("ball", ball),
+    RigidTransform(RotationMatrix(),[0.0, -0.52, 0.3]),
+)
 
 # add floor 
 floor = AddShape(

@@ -203,9 +203,9 @@ S_label['robot1_in_target3'] = RefineRegion(S_iris['robot1_in_target3'], joint_l
 S_label['robot4_in_target4'] = RefineRegion(S_iris['robot4_in_target4'], joint_label['robot4_in_target4'], robot_num, [0,0,0,1], 3)
 S_label['robot4_in_target5'] = RefineRegion(S_iris['robot4_in_target5'], joint_label['robot4_in_target5'], robot_num, [0,0,0,1], 3)
 S_label['robot4_in_target6'] = RefineRegion(S_iris['robot4_in_target6'], joint_label['robot4_in_target6'], robot_num, [0,0,0,1], 3)
-S_label['robot12_handover'] = RefineRegion(S_iris['robot12_handover'], joint_label['robot12_handover'], robot_num, np.array([[1,0,0,0],[0,1,0,0]]), [0,1],True)
-S_label['robot23_handover'] = RefineRegion(S_iris['robot23_handover'], joint_label['robot23_handover'], robot_num, np.array([[0,1,0,0],[0,0,1,0]]), [1,2],True)
-S_label['robot34_handover'] = RefineRegion(S_iris['robot34_handover'], joint_label['robot34_handover'], robot_num, np.array([[0,0,1,0],[0,0,0,1]]), [2,3],True)
+# S_label['robot12_handover'] = RefineRegion(S_iris['robot12_handover'], joint_label['robot12_handover'], robot_num, np.array([[1,0,0,0],[0,1,0,0]]), [0,1],True)
+# S_label['robot23_handover'] = RefineRegion(S_iris['robot23_handover'], joint_label['robot23_handover'], robot_num, np.array([[0,1,0,0],[0,0,1,0]]), [1,2],True)
+# S_label['robot34_handover'] = RefineRegion(S_iris['robot34_handover'], joint_label['robot34_handover'], robot_num, np.array([[0,0,1,0],[0,0,0,1]]), [2,3],True)
 S_label['robot14_handover'] = RefineRegion(S_iris['robot34_handover'], joint_label['robot34_handover'], robot_num, np.array([[0,0,1,0],[0,0,0,1]]), [2,3],True)
 # test
 # for item in combinations_list:  # do I need conbined each other region
@@ -243,7 +243,7 @@ for item in combinations_list:  # do I need conbined each other region
     label = f"{gcs_label[item[0]]}_connect_{gcs_label[item[1]]}"
     for i in range(len(S_connect[f'{name}'])):
         ts.AddPartition(S_connect[f'{name}'][i], [[f"{label}_{i}"], [f"{label}_{i}"]])
-# ipdb.set_trace()
+
 connect_label = ts.AddEdgesFromRRT()
 
 dfa_start_time = time.time()

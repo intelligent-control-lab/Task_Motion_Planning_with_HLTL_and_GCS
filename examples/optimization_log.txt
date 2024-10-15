@@ -2,48 +2,50 @@ Problem
   Name                   :                 
   Objective sense        : minimize        
   Type                   : CONIC (conic optimization problem)
-  Constraints            : 220187          
-  Affine conic cons.     : 198 (5742 rows)
+  Constraints            : 55054           
+  Affine conic cons.     : 124 (1984 rows)
   Disjunctive cons.      : 0               
   Cones                  : 0               
-  Scalar variables       : 17946           
+  Scalar variables       : 6598            
   Matrix variables       : 0               
-  Integer variables      : 1215            
+  Integer variables      : 584             
 
 Optimizer started.
 Mixed integer optimizer started.
 Threads used: 24
 Presolve started.
-Presolve terminated. Time = 3.06, probing time =  0.14
-Presolved problem: 7771 variables, 139648 constraints, 2980706 non-zeros
-Presolved problem: 0 general integer, 11 binary, 7760 continuous
-Presolved problem: 172 cones
-Clique table size: 4
-Symmetry factor  : 0.01 (detection time = 0.61)
+Presolve terminated. Time = 0.26, probing time =  0.01
+Presolved problem: 2505 variables, 23415 constraints, 274655 non-zeros
+Presolved problem: 0 general integer, 3 binary, 2502 continuous
+Presolved problem: 100 cones
+Clique table size: 2
+Symmetry factor  : 0.00 (detection time = 0.05)
 BRANCHES RELAXS   ACT_NDS  DEPTH    BEST_INT_OBJ         BEST_RELAX_OBJ       REL_GAP(%)  TIME  
-0        1        1        0        NA                   2.5443064133e+01     NA          4.8   
-0        1        1        0        2.5443085770e+01     2.5443064133e+01     8.50e-05    11.5  
+0        1        1        0        NA                   8.4561465692e+00     NA          0.5   
+0        1        1        0        8.4561457056e+00     8.4561457056e+00     0.00e+00    1.1   
 An optimal solution satisfying the relative gap tolerance of 1.00e-02(%) has been located.
-The relative gap is 8.50e-05(%).
+The relative gap is 0.00e+00(%).
+An optimal solution satisfying the absolute gap tolerance of 0.00e+00 has been located.
+The absolute gap is 0.00e+00.
 
-Objective of best integer solution : 2.544308576986e+01      
-Best objective bound               : 2.544306413258e+01      
+Objective of best integer solution : 8.456145705571e+00      
+Best objective bound               : 8.456145705571e+00      
 Initial feasible solution objective: Undefined
 Construct solution objective       : Not employed
 User objective cut value           : Not employed
 Number of cuts generated           : 0
 Number of branches                 : 0
 Number of relaxations solved       : 1
-Number of interior point iterations: 23
+Number of interior point iterations: 24
 Number of simplex iterations       : 0
-Time spend presolving the root     : 3.06
-Time spend optimizing the root     : 1.30
-Mixed integer optimizer terminated. Time: 11.53
+Time spend presolving the root     : 0.26
+Time spend optimizing the root     : 0.19
+Mixed integer optimizer terminated. Time: 1.05
 
-Optimizer terminated. Time: 11.54   
+Optimizer terminated. Time: 1.06    
 
 
 Integer solution solution summary
   Problem status  : PRIMAL_FEASIBLE
   Solution status : INTEGER_OPTIMAL
-  Primal.  obj: 2.5443085770e+01    nrm: 2e+01    Viol.  con: 8e-11    var: 0e+00    acc: 1e-10    itg: 1e-05  
+  Primal.  obj: 8.4561457056e+00    nrm: 1e+03    Viol.  con: 2e-10    var: 0e+00    acc: 0e+00    itg: 0e+00  

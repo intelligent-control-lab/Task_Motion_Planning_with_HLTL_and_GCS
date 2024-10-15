@@ -4,7 +4,7 @@ import warnings
 import time
 import ipdb
 
-OPT_TIME = False                                
+# OPT_TIME = False                                
 
 class ShortestPathVariables():
 
@@ -228,7 +228,7 @@ class ShortestPathConstraints():
         self.objective = obj
     
     @staticmethod
-    def populate_program(prog, graph, vars, is_hand_over = False):
+    def populate_program(prog, graph, vars, is_hand_over = False, OPT_TIME = False):
 
         def findIndex(data, target):
         
@@ -626,7 +626,7 @@ class ShortestPathSolution():
 
 class ShortestPathProblem():
 
-    def __init__(self, graph, relaxation=False, is_hand_over = False):
+    def __init__(self, graph, relaxation=False, is_hand_over = False, OPT_TIME = False):
 
         self.graph = graph
         self.relaxation = relaxation
@@ -634,10 +634,10 @@ class ShortestPathProblem():
         
         self.prog = MathematicalProgram()
         self.vars = ShortestPathVariables.populate_program(self.prog, graph, relaxation)
-        self.constraints = ShortestPathConstraints.populate_program(self.prog, graph, self.vars, self.is_hand_over)
+        self.constraints = ShortestPathConstraints.populate_program(self.prog, graph, self.vars, self.is_hand_over, OPT_TIME)
         self.prog.AddLinearCost(sum(self.vars.l))
 
-    def solve(self):
+    def solve(self,OPT_TIME = False):
         solve_start_time = time.time()
         solver = MosekSolver()
         solver_options = SolverOptions()

@@ -436,7 +436,7 @@ b = q2_pick3_region.b() - q2_pick3_region.A()[:,7:14] @ q2_pick3.transpose()
 b = np.vstack((np.reshape(b, (r, 1)),np.reshape(q2_pick3, (7, 1)),-np.reshape(q2_pick3, (7, 1))))
 q2_pick3_region_fixed = HPolyhedron(A,b)
 
-# refine the q12_hand_over
+# refine the q13_hand_over
 r,c = q1q3_handover1_region.A().shape
 m1 = np.hstack((np.eye(7),np.zeros((7, 7)), np.zeros((7, 1))))
 m2 = np.hstack((np.zeros((1, 7)),np.zeros((1, 7)), np.eye(1)))
@@ -695,8 +695,8 @@ for trajectory in path_with_gripper:
             elif index[0] == 1:
                 q_index = 2
                 
-        elif "drop" in v:
-            index = findIndex(v,'drop')
+        elif "place" in v:
+            index = findIndex(v,'place')
             q_index = end_index
             
         q_object_real = np.vstack((q_object1[0],q_object2[0],q_object3[0]))

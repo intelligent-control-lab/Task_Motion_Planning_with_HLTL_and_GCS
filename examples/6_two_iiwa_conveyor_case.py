@@ -12,10 +12,11 @@ from hltl2gcs.specification import Specification
 from hltl2gcs.transition_system import TransitionSystem
 from hltl2gcs.fa import FiniteAutomaton
 from hltl2gcs.support_functions import AddShape
-from hltl2gcs.support_functions import RigidTransform2Array,show_robot_4_iiwa,findIndex, construct_labeled_convex_region, construct_connected_convex_region_RRT,RefineRegion
+from hltl2gcs.support_functions import RigidTransform2Array,show_robot_2_iiwa_conveyor,findIndex, construct_labeled_convex_region, construct_connected_convex_region_RRT,RefineRegion
 from rrt.rrt_4_iiwa_rectangular_problem import IiwaProblem, rrt_planning
 
 SHOW_ROBOT = True
+OPT_TIME = True
 # defined your mosek solver path
 os.environ["MOSEKLM_LICENSE_FILE"] = "/opt/mosek/mosek.lic"   
 
@@ -29,7 +30,7 @@ plant, scene_graph = AddMultibodyPlantSceneGraph(builder, time_step=1e-4)
 parser = Parser(plant)
 parser.package_map().Add("drake_project", "../")    
 if SHOW_ROBOT == True: 
-    directives = LoadModelDirectives("models/two_iiwa_conveyor/two_iiwa_with_conveyor.yaml")
+    directives = LoadModelDirectives("models/two_iiwa_conveyor/two_robot_with_conveyor_gripper.yaml")
 else:
     directives = LoadModelDirectives("models/two_iiwa_conveyor/two_iiwa_with_conveyor.yaml")
 models = ProcessModelDirectives(directives, plant, parser)
@@ -81,13 +82,6 @@ conveyor_frame_1 = plant.AddFrame(
         RigidTransform(RollPitchYaw(0, np.pi/2, 0).ToRotationMatrix(),[0.0, length_of_conveyor, 0.1]),
     )
 ) 
-
-# define iiwa frame
-iiwa_1 = plant.GetModelInstanceByName("iiwa_1")
-iiwa_2 = plant.GetModelInstanceByName("iiwa_2")
-
-iiwa_1_tool_frame = plant.GetFrameByName("iiwa_link_ee", iiwa_1)
-iiwa_2_tool_frame = plant.GetFrameByName("iiwa_link_ee", iiwa_2)
 
 # Add robot base
 base1 = AddShape(
@@ -171,15 +165,15 @@ else:
 
 # add floor 
 floor = AddShape(
-    plant, Box(2.3, 2.7, 0.1), "floor", mass= 1, mu = 1, color=[0.835, 0.835, 0.835, 1]
+    plant, Box(1.6, 4, 0.1), "floor", mass= 1, mu = 1, color=[0.835, 0.835, 0.835, 1]
 )
 plant.WeldFrames(
     plant.world_frame(),
     plant.GetFrameByName("floor", floor),
-    RigidTransform(RotationMatrix(),[0.6, 0.6, -0.05]),
+    RigidTransform(RotationMatrix(),[0.5, 1.2, -0.05]),
 )
 iiwa_attach_frame = dict()
-for i in range(4):
+for i in range(2):
     iiwa_attach_frame[i] = plant.AddFrame(
     FixedOffsetFrame(
         f"iiwa_{i}_attach_frame",
@@ -187,7 +181,7 @@ for i in range(4):
         RigidTransform(RollPitchYaw(0,0, 0).ToRotationMatrix(),np.array([0.2,0,0])),
     )
 )
-    
+ 
 # build plant and diagram
 plant.Finalize()
 ctrl = builder.AddSystem(ConstantVectorSource(np.zeros(plant.num_actuators())))
@@ -239,15 +233,12 @@ gcs_label = {
     'robot1_in_target1': [["target_1"], [""], [""]],
     'robot1_in_target2': [["target_2"], [""], [""]],
     'robot1_in_target3': [["target_3"], [""],[""]],
-    'robot2_in_target4': [[""], [""],["target_4"]],
-    'robot2_in_target5': [[""], [""], ["target_5"]],
-    'robot2_in_target6': [[""], [""],["target_6"]],
-    'robot13_handover1': [["handover"], [""],["handover"]],
-    'robot13_handover2': [["handover"], [""],["handover"]],
-    'robot13_handover3': [["handover"], [""],["handover"]],
-    'robot23_handover1': [[""], ["handover"],["handover"]],
-    'robot23_handover2': [[""], ["handover"],["handover"]],
-    'robot23_handover3': [[""], ["handover"],["handover"]],
+    'robot2_in_target4': [[""], ["target_4"], [""]],
+    'robot2_in_target5': [[""], ["target_5"], [""]],
+    'robot2_in_target6': [[""], ["target_6"], [""]],
+    'robot12_handover1': [["handover1"], ["handover1"],[""]],
+    'robot12_handover2': [["handover2"], ["handover2"],[""]],
+    'robot12_handover3': [["handover3"], ["handover3"],[""]],
 }
 
 # user define H-LTL Specification
@@ -280,16 +271,19 @@ if perform_iris_label:
 perform_iris_connect = False
 keys_list = list(joint_label.keys())
 combinations_list = list(combinations(keys_list[:7], 2))        # to reduce some combinations if robot is never reach that regions
-combinations_handover_list = [('robot1_in_target1', 'robot13_handover1'),('robot1_in_target2', 'robot13_handover2'),('robot1_in_target3', 'robot13_handover3'),
-                              ('robot23_handover1', 'robot2_in_target4'),('robot23_handover2', 'robot2_in_target5'),('robot23_handover3', 'robot2_in_target6')]
+combinations_handover_list = [
+    ('robot1_in_target1', 'robot12_handover1'),
+    ('robot1_in_target2', 'robot12_handover2'),
+    ('robot1_in_target3', 'robot12_handover3'),
+    ('robot12_handover1', 'robot2_in_target6'),
+    ('robot12_handover2', 'robot2_in_target5'),
+    ('robot12_handover3', 'robot2_in_target4')
+                              ]
 combinations_list = combinations_list + combinations_handover_list      
 
 if perform_iris_connect:
     construct_connected_convex_region_RRT(diagram, plant, joint_label, combinations_list, IiwaProblem, rrt_planning, iris_region_path)
 
-
-
-ipdb.set_trace()
 # Load and refined to labeled convex region
 S_iris = dict()
 S_label = dict()
@@ -298,18 +292,26 @@ for name, configuration in joint_label.items():
         S_iris[f'{name}'] = pickle.load(f)
 
 S_label['robot_init'] = S_iris['robot_init']
-S_label['robot1_in_target1'] = RefineRegion(S_iris['robot1_in_target1'], joint_label['robot1_in_target1'], robot_num, [1,0,0,0], 0)
-S_label['robot2_in_target2'] = RefineRegion(S_iris['robot2_in_target2'], joint_label['robot2_in_target2'], robot_num, [0,1,0,0], 1)
-S_label['robot3_in_target3'] = RefineRegion(S_iris['robot3_in_target3'], joint_label['robot3_in_target3'], robot_num, [0,0,1,0], 2)
-S_label['robot4_in_target4'] = RefineRegion(S_iris['robot4_in_target4'], joint_label['robot4_in_target4'], robot_num, [0,0,0,1], 3)
-S_label['robot1_in_target5'] = RefineRegion(S_iris['robot1_in_target5'], joint_label['robot1_in_target5'], robot_num, [1,0,0,0], 0)
-S_label['robot4_in_target6'] = RefineRegion(S_iris['robot4_in_target6'], joint_label['robot4_in_target6'], robot_num, [0,0,0,1], 3)
-S_label['robot12_handover'] = RefineRegion(S_iris['robot12_handover'], joint_label['robot12_handover'], robot_num, np.array([[1,0,0,0],[0,1,0,0]]), [0,1],True)
-S_label['robot13_handover'] = RefineRegion(S_iris['robot13_handover'], joint_label['robot13_handover'], robot_num, np.array([[1,0,0,0],[0,0,1,0]]), [0,2],True)
-S_label['robot14_handover'] = RefineRegion(S_iris['robot14_handover'], joint_label['robot14_handover'], robot_num, np.array([[1,0,0,0],[0,0,0,1]]), [0,3],True)
-S_label['robot23_handover'] = RefineRegion(S_iris['robot23_handover'], joint_label['robot23_handover'], robot_num, np.array([[0,1,0,0],[0,0,1,0]]), [1,2],True)
-S_label['robot24_handover'] = RefineRegion(S_iris['robot24_handover'], joint_label['robot24_handover'], robot_num, np.array([[0,1,0,0],[0,0,0,1]]), [1,3],True)
-S_label['robot34_handover'] = RefineRegion(S_iris['robot34_handover'], joint_label['robot34_handover'], robot_num, np.array([[0,0,1,0],[0,0,0,1]]), [2,3],True)
+S_label['robot1_in_target1'] = RefineRegion(S_iris['robot1_in_target1'], joint_label['robot1_in_target1'], robot_num, [1,0], 0)
+S_label['robot1_in_target2'] = RefineRegion(S_iris['robot1_in_target2'], joint_label['robot1_in_target2'], robot_num, [1,0], 0)
+S_label['robot1_in_target3'] = RefineRegion(S_iris['robot1_in_target3'], joint_label['robot1_in_target3'], robot_num, [1,0], 0)
+S_label['robot2_in_target4'] = RefineRegion(S_iris['robot2_in_target4'], joint_label['robot2_in_target4'], robot_num, [0,1], 1)
+S_label['robot2_in_target5'] = RefineRegion(S_iris['robot2_in_target5'], joint_label['robot2_in_target5'], robot_num, [0,1], 1)
+S_label['robot2_in_target6'] = RefineRegion(S_iris['robot2_in_target6'], joint_label['robot2_in_target6'], robot_num, [0,1], 1)
+
+S_label['robot13_handover1'] = RefineRegion(S_iris['robot13_handover1'], joint_label['robot13_handover1'], robot_num, np.array([[1,0]]), [0], True)
+S_label['robot13_handover2'] = RefineRegion(S_iris['robot13_handover2'], joint_label['robot13_handover2'], robot_num, np.array([[1,0]]), [0], True)
+S_label['robot13_handover3'] = RefineRegion(S_iris['robot13_handover3'], joint_label['robot13_handover3'], robot_num, np.array([[1,0]]), [0], True)
+S_label['robot23_handover1'] = RefineRegion(S_iris['robot23_handover1'], joint_label['robot23_handover1'], robot_num, np.array([[0,1]]), [1], True)
+S_label['robot23_handover2'] = RefineRegion(S_iris['robot23_handover2'], joint_label['robot23_handover2'], robot_num, np.array([[0,1]]), [1], True)
+S_label['robot23_handover3'] = RefineRegion(S_iris['robot23_handover3'], joint_label['robot23_handover3'], robot_num, np.array([[0,1]]), [1], True)
+
+S_iris['robot12_handover1'] = S_iris['robot23_handover1']
+S_iris['robot12_handover2'] = S_iris['robot23_handover2']
+S_iris['robot12_handover3'] = S_iris['robot23_handover3']
+S_label['robot12_handover1'] = S_label['robot23_handover1']
+S_label['robot12_handover2'] = S_label['robot23_handover2']
+S_label['robot12_handover3'] = S_label['robot23_handover3']
 
 # Load saved connected convex region
 S_connect = dict()
@@ -318,18 +320,19 @@ for item in combinations_list:
     with open(f"Iris_regions/{iris_region_path}/{name}.pkl", "rb") as f:
         S_connect[f'{name}'] = pickle.load(f)    
 
-ts = TransitionSystem(28,robot_num,object_num)
-ts.AddPartition(S_label['robot_init'], [[""], [""], [""], [""]])
+ts = TransitionSystem(15,robot_num,object_num, OPT_TIME)
+ts.AddPartition(S_label['robot_init'], [[""], [""], [""]])
 
 # case 3: four robot and 2 object hand over (no handover if no order? issue)
-ts.AddPartition(S_label['robot1_in_target1'], [["target_1"], [""], [""], [""]]) 
-ts.AddPartition(S_label['robot2_in_target2'], [[""], ["target_2"], [""], [""]])
-ts.AddPartition(S_label['robot3_in_target3'], [[""], [""],["target_3"],[""]]) 
-ts.AddPartition(S_label['robot4_in_target4'], [[""], [""],[""],["target_4"]])
-ts.AddPartition(S_label['robot1_in_target5'], [["target_5"], [""], [""], [""]]) 
-ts.AddPartition(S_label['robot4_in_target6'], [[""], [""],[""],["target_6"]]) 
-ts.AddPartition(S_label['robot14_handover'], [["handover"], [""],[""],["handover"]])
-ts.AddPartition(S_label['robot23_handover'], [[""],["handover"], ["handover"],[""]])
+ts.AddPartition(S_label['robot1_in_target1'], [["target_1"], [""], [""]]) 
+ts.AddPartition(S_label['robot1_in_target2'], [["target_2"], [""], [""]])
+ts.AddPartition(S_label['robot1_in_target3'], [["target_3"], [""],[""]]) 
+ts.AddPartition(S_label['robot2_in_target4'], [[""], ["target_4"],[""]])
+ts.AddPartition(S_label['robot2_in_target5'], [[""], ["target_5"],[""]]) 
+ts.AddPartition(S_label['robot2_in_target6'], [[""], ["target_6"],[""]]) 
+ts.AddPartition(S_label['robot12_handover1'], [["handover1"], ["handover1"],[""]])
+ts.AddPartition(S_label['robot12_handover2'], [["handover2"], ["handover2"],[""]])
+ts.AddPartition(S_label['robot12_handover3'], [["handover3"], ["handover3"],[""]])
 
 for item in combinations_list:  # do I need conbined each other region
     name = f"{item[0]}_connect_{item[1]}"
@@ -349,23 +352,31 @@ product_start_time = time.time()
 bgcs = ts.Product(dfa, robot_init, order, continuity, is_handover, connect_label, args)
 
 # python gcs planning code 
-path, path_with_gripper, vertex_array = bgcs.SolveShortestPath()
-    
-# show robot in meshcat
-if SHOW_ROBOT == True:
-    q_object1_init = RigidTransform2Array(RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[0, -0.52, 0.1]))
-    q_object2_init = RigidTransform2Array(RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[1.0, -0.52, 0.1]))
-    q_object3_init = RigidTransform2Array(RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[0.5, -0.52, 0.1]))
+path, path_with_gripper, vertex_array = bgcs.SolveShortestPath(OPT_TIME)
 
-    q_object1_drop = RigidTransform2Array(RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[0.8, 1.8, 0.1]))
-    q_object2_drop = RigidTransform2Array(RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[0, 1.8, 0.1]))
-    q_object3_drop = RigidTransform2Array(RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[1.3, 1.8, 0.1]))
+dt = 0.02
+t = 0
+if SHOW_ROBOT == True:
+    q_object1_attach = RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[0.6, 0.2, 0.7])
+    q_object2_attach = RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[0.6, 0.0, 0.7])
+    q_object3_attach = RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[0.6, -0.2, 0.7])
+    q_object1_init = RigidTransform2Array(q_object1_attach)
+    q_object2_init = RigidTransform2Array(q_object2_attach)
+    q_object3_init = RigidTransform2Array(q_object3_attach)
+
+    q_object1_attach1 = RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[0.6, 2.2+0.2, 0.7])
+    q_object2_attach1 = RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[0.6, 2.2, 0.7])
+    q_object3_attach1 = RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[0.6, 2.2 - 0.2, 0.7])
+    q_object1_drop = RigidTransform2Array(q_object1_attach1)
+    q_object2_drop = RigidTransform2Array(q_object2_attach1)
+    q_object3_drop = RigidTransform2Array(q_object3_attach1)
     
-    show_robot_4_iiwa(diagram, plant, visualizer,robot_num, q_object1_init,q_object2_init,q_object3_init, q_object1_drop,q_object2_drop,q_object3_drop, path_with_gripper, vertex_array, iiwa_attach_frame)
+    show_robot_2_iiwa_conveyor(diagram, plant, visualizer,robot_num, q_object1_init,q_object2_init,q_object3_init, q_object1_drop,q_object2_drop,q_object3_drop, path_with_gripper, vertex_array, iiwa_attach_frame,conveyor_frame_1,conveyor_frame_2,conveyor_frame_3)
     
     html_str = meshcat.StaticHtml()
-    file_path = "../media/four_robot_close_three_object_hand_over.html"
+    file_path = "../media/two_iiwa_conveyor.html"
     with open(file_path, "w") as html_file:
         html_file.write(html_str)
+
 while 1:
     a = 0

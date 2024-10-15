@@ -73,21 +73,6 @@ else:
         plant.GetFrameByName("block3", block3),
         RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[0.5, -0.52, 0.1]),
     )  
-    # plant.WeldFrames(
-    #     plant.world_frame(),
-    #     plant.GetFrameByName("block1", block1),
-    #     RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[0, 1.8, 0.1]),
-    # )
-    # plant.WeldFrames(
-    #     plant.world_frame(),
-    #     plant.GetFrameByName("block2", block2),
-    #     RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[0.8, 1.8, 0.1]),
-    # )
-    # plant.WeldFrames(
-    #     plant.world_frame(),
-    #     plant.GetFrameByName("block3", block3),
-    #     RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[1.3, 1.8, 0.1]),
-    # )
     
 # add floor 
 floor = AddShape(
@@ -223,7 +208,7 @@ S_label['robot14_handover'] = RefineRegion(S_iris['robot14_handover'], joint_lab
 S_label['robot23_handover'] = RefineRegion(S_iris['robot23_handover'], joint_label['robot23_handover'], robot_num, np.array([[0,1,0,0],[0,0,1,0]]), [1,2],True)
 S_label['robot24_handover'] = RefineRegion(S_iris['robot24_handover'], joint_label['robot24_handover'], robot_num, np.array([[0,1,0,0],[0,0,0,1]]), [1,3],True)
 S_label['robot34_handover'] = RefineRegion(S_iris['robot34_handover'], joint_label['robot34_handover'], robot_num, np.array([[0,0,1,0],[0,0,0,1]]), [2,3],True)
-
+      
 # Load saved connected convex region
 S_connect = dict()
 for item in combinations_list: 
