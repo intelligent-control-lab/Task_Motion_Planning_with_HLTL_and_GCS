@@ -207,14 +207,14 @@ class BezierGraphOfConvexSetsHandover(DirectedGraph):
             result: a MathematicalProgramResult encoding the solution.
         """
         graph = self.G.graphviz()
-        graph.render(filename='graph_before', format='png', cleanup=True)
+        graph.render(filename='../media/graph_before', format='png', cleanup=True)
         # graph.view()  
         print("start")
         path, valid_edge, w_var, path_with_gripper,vertex_array = self.spp.solve(OPT_TIME)    
         
         # orignial graph    
         graph = self.G.graphviz(valid_edge = valid_edge, w_var = w_var)
-        graph.render(filename='graph_after', format='png', cleanup=True) 
+        graph.render(filename='../media/graph_after', format='png', cleanup=True) 
 
         print("finsh grtaph")
         return path, path_with_gripper,vertex_array

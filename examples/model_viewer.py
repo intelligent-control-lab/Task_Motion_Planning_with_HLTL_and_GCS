@@ -50,8 +50,8 @@ visualizer = ModelVisualizer(meshcat=meshcat)
 # visualizer.parser().AddModelsFromUrl("package://manipulation/complex_2d_cspace.xml")
 
 # show g1 
-visualizer.package_map().Add("drake_project", "../")
-visualizer.parser().AddModels("models/g1_description/g1.dmd.yaml")
+# visualizer.package_map().Add("drake_project", "../")
+# visualizer.parser().AddModels("models/g1_description/g1.dmd.yaml")
 
 test_mode = True if "TEST_SRCDIR" in os.environ else False
 visualizer.Run(loop_once=test_mode)

@@ -1,0 +1,38 @@
+directives:
+- add_model:
+    name: spot
+    file: package://drake_project/../Task_Motion_Planning/GCS_planning/models/spot_description/spot_with_arm_and_floating_base_actuators.urdf
+    default_joint_positions:
+        arm_sh1: [-3.1]
+        arm_el0: [3.1]
+
+# Add iiwa_1
+- add_model:
+    name: iiwa_1
+    file: package://drake/manipulation/models/iiwa_description/urdf/iiwa14_spheres_collision.urdf
+
+- add_frame:
+    name: iiwa_1_origin
+    X_PF:
+      base_frame: world
+      translation: [3, 1.5, 0.6]
+
+- add_weld:
+    parent: iiwa_1_origin
+    child: iiwa_1::base
+    
+# # Add schunk_1
+# - add_model:
+#     name: wsg_1
+#     file: package://drake_project/../Task_Motion_Planning/GCS_planning/models/schunk_wsg_50_no_tip.sdf
+
+# - add_frame:
+#     name: iiwa_1::wsg_attach
+#     X_PF:
+#       base_frame: iiwa_1::iiwa_link_7
+#       translation: [0, 0, 0.1]
+#       rotation: !Rpy { deg: [90.0, 0.0, 90.0]}
+
+# - add_weld:
+#     parent: iiwa_1::wsg_attach
+#     child: wsg_1::body

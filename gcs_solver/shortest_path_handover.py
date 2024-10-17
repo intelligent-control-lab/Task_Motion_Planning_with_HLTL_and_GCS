@@ -527,61 +527,19 @@ class ShortestPathConstraints():
                                                     n_incoming_parent_set = n_incoming_parent_set + 1
                                                     phi_parent_incoming.append(vars.phi[k_pppparent_in[g]])
                                                     vertex_parent_incoming.append(edges_pppparent_in[g][0])
-                                                    # ipdb.set_trace()
-                    # print(vertex)
-                
-                
-                # for i in range(len(edges_in)):
-                #     # find parents notes
-                #     edges_parent_in, k_parent_in = graph.incoming_edges(edges_in[i][0])   # find it's parents note's edges
-                #     for j in range(len(edges_parent_in)):
-                #         if edges_parent_in[j][0] != vertex and edges_parent_in[j][0] != "start":
-                #             if ('target' in edges_parent_in[j][0] and 'connect' not in edges_parent_in[j][0]) or ('handover' in edges_parent_in[j][0] and 'connect' not in edges_parent_in[j][0]):
-                #                 n_incoming_parent_set = n_incoming_parent_set + 1
-                #                 phi_parent_incoming.append(vars.phi[k_parent_in[j]])
-                #                 vertex_parent_incoming.append(edges_parent_in[j][0])
-                #             else:
-                #                 edges__parentparent_in, k_parentparent_in = graph.incoming_edges(edges_parent_in[j][0])
-                #                 for k in range(len(edges__parentparent_in)):
-                #                     if ('target' in edges__parentparent_in[k][0] and 'connect' not in edges_parent_in[j][0]) or ('handover' in edges__parentparent_in[k][0] and 'connect' not in edges_parent_in[j][0]):
-                #                         n_incoming_parent_set = n_incoming_parent_set + 1
-                #                         phi_parent_incoming.append(vars.phi[k_parentparent_in[k]])
-                #                         vertex_parent_incoming.append(edges__parentparent_in[k][0])
-                #                     # change to 4 past parents at 07/04
-                #                     else:
-                #                         edges_3parent_in, k_3parent_in = graph.incoming_edges(edges__parentparent_in[k][0])
-                #                         for k in range(len(edges_3parent_in)):
-                #                             if ('target' in edges_3parent_in[k][0] and 'connect' not in edges_parent_in[j][0]) or ('handover' in edges_3parent_in[k][0] and 'connect' not in edges_parent_in[j][0]):
-                #                                 n_incoming_parent_set = n_incoming_parent_set + 1
-                #                                 phi_parent_incoming.append(vars.phi[k_3parent_in[k]])
-                #                                 vertex_parent_incoming.append(edges_3parent_in[k][0])
-                #                             else:
-                #                                 edges_4parent_in, k_4parent_in = graph.incoming_edges(edges_3parent_in[k][0])
-                #                                 for k in range(len(edges_4parent_in)):
-                #                                     if ('target' in edges_4parent_in[k][0] and 'connect' not in edges_parent_in[j][0]) or ('handover' in edges_4parent_in[k][0] and 'connect' not in edges_parent_in[j][0]):
-                #                                         n_incoming_parent_set = n_incoming_parent_set + 1
-                #                                         phi_parent_incoming.append(vars.phi[k_4parent_in[k]])
-                #                                         vertex_parent_incoming.append(edges_4parent_in[k][0])
-                                  
-                                  
-                                                
+                    
                 assert n_incoming_parent_set == len(phi_parent_incoming)
                 # big M constrains
                 m = 20
 
                 # make sure two pick is not connected
                 if ('target' in vertex) and ('place' in vertex):
-                    # ipdb.set_trace()
                     for i in range(n_incoming_parent_set):
                         for j in range(graph.n_robot):
                             for k in range(graph.n_object):
                                 prog.AddLinearConstraint((vars.w[vertex_parent_incoming[i]][j,k] - vars.w[vertex][j,k]) <= m * (1 - phi_parent_incoming[i]))
                                 prog.AddLinearConstraint(m * (phi_parent_incoming[i] - 1) <= (vars.w[vertex_parent_incoming[i]][j,k] - vars.w[vertex][j,k]))
-                    print(vertex)
-                    print(n_incoming_parent_set)
-                    print(vertex_parent_incoming)
                 
-                # ipdb.set_trace() 
                 # to do, solve four robot hand over case
                 if ('handover' in vertex) and ('connect' not in vertex):
                     index = findIndex(vertex,'handover')
@@ -589,14 +547,11 @@ class ShortestPathConstraints():
                         for k in range(graph.n_object):
                             prog.AddLinearConstraint((vars.w[vertex_parent_incoming[i]][index[0],k] - vars.w[vertex][index[1],k]) <= m * (1 - phi_parent_incoming[i]))
                             prog.AddLinearConstraint(m * (phi_parent_incoming[i] - 1) <= (vars.w[vertex_parent_incoming[i]][index[0],k] - vars.w[vertex][index[1],k]))
-                    # print(vertex)
-                    # print(n_incoming_parent_set)
-                    # print(vertex_parent_incoming)
-        # ipdb.set_trace()
-        # spatial nonnegativity (not stored)
+
+        # spatial nonnegativity 
         for k, edge in enumerate(graph.edges):
             graph.sets[edge[0]].AddPointInNonnegativeScalingConstraints(prog, vars.y[k], vars.phi[k])
-        # ipdb.set_trace()
+            
         return ShortestPathConstraints(cons, deg, sp_cons)
 
     @staticmethod
@@ -641,9 +596,9 @@ class ShortestPathProblem():
         solve_start_time = time.time()
         solver = MosekSolver()
         solver_options = SolverOptions()
-        filename = "optimization_log.txt"
-        solver_options.SetOption(CommonSolverOption.kPrintFileName, filename)
-        result = MosekSolver().Solve(self.prog, solver_options = solver_options)
+        # filename = "optimization_log.txt"
+        # solver_options.SetOption(CommonSolverOption.kPrintFileName, filename)
+        result = MosekSolver().Solve(self.prog)
         solve_time = time.time() - solve_start_time
         print("solve_time:", solve_time)
         print("Success? ", result.is_success())

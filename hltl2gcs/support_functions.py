@@ -195,6 +195,35 @@ def RefineRegion(convex_region, q, robot_num, key_robot_pattern, key_robot_index
     
     return refined_convex_region
 
+def RefineRegion1(convex_region, q, robot_num, key_robot_pattern, key_robot_index,is_handover = False):    
+    split_A = np.array_split(convex_region.A(), robot_num, axis=1)
+    split_A_copy = np.array_split(convex_region.A(), robot_num, axis=1)
+    split_q = np.array_split(q, robot_num, axis=0)
+    robot_dof = int(len(q) / robot_num)
+    r,c = convex_region.A().shape
+
+    if is_handover == False:
+        if str(key_robot_pattern) == str(np.array([1,0])):
+            m1 = np.hstack((np.eye(7),np.zeros((7, 9))))
+            m2 = -m1
+            A = np.hstack((np.zeros((r, 7)),convex_region.A()[:,-9:]))
+            A = np.vstack((A,m1,m2))
+            b = convex_region.b() - convex_region.A()[:,:7] @ q[:7].transpose()
+            b = np.vstack((np.reshape(b, (r, 1)),np.reshape(q[:7], (7, 1)),-np.reshape(q[:7], (7, 1))))
+            refined_convex_region = HPolyhedron(A,b)
+        elif str(key_robot_pattern) == str(np.array([0,1])):
+            m1 = np.hstack((np.zeros((9,7)),np.eye((9))))
+            m2 = -m1
+            A = np.hstack((convex_region.A()[:,:7],np.zeros((r, 9))))
+            A = np.vstack((A,m1,m2))
+            b = convex_region.b() - convex_region.A()[:,-9:] @ q[-9:].transpose()
+            b = np.vstack((np.reshape(b, (r, 1)),np.reshape(q[-9:], (9, 1)),-np.reshape(q[-9:], (9, 1))))
+            refined_convex_region = HPolyhedron(A,b)  
+    else:
+        refined_convex_region = HPolyhedron.MakeBox(q,q)
+    
+    return refined_convex_region
+
 def show_robot(diagram, plant, visualizer, robot_num, object_num, object_init_pose, object_goal_pose, path, vertex_array, iiwa_attach_frame):
     count = 0
     time_step = 0.1
@@ -553,7 +582,58 @@ def show_robot_2_iiwa_conveyor(diagram, plant, visualizer,robot_num, q_object1_i
     visualizer.StopRecording()
     visualizer.PublishRecording()
 
+def show_robot_spot_handover(diagram, plant, visualizer, robot_num, object_num, object_init_pose, object_goal_pose, path, vertex_array, iiwa_attach_frame):
+    count = 0
+    time_step = 0.1
+    object_in_robot_index = 0
+    robot_attach_pose = dict()
+    robot_attach_pose[0] = object_init_pose
+    robot_attach_pose[robot_num+1] = object_goal_pose
+    diagram_context = diagram.CreateDefaultContext()
+    plant_context = diagram.GetMutableSubsystemContext(plant, diagram_context)
+    current_moving_object = 0
+    visualizer.StartRecording()
+    visualizer_context = visualizer.GetMyContextFromRoot(diagram_context)
+    open_gripper = np.array([-0.06,0.06])
+    close_gripper = np.array([-0.025,0.025])
+    spot_open_gripper = np.array([-1.57])
+    spot_close_gripper = np.array([-0.5])
+    iiwa_gripper = open_gripper
+    spot_gripper = spot_open_gripper
+    for trajectory in path:
+        v = vertex_array[count]
+        for t in np.append(np.arange(trajectory.start_time(), trajectory.end_time(), time_step),trajectory.end_time()):
+            diagram_context.SetTime(t)
+            # calculate the robot end-effector position
+            joint_position = np.concatenate((trajectory.value(t)[0:7],open_gripper.reshape(2,1), trajectory.value(t)[7:16],spot_open_gripper.reshape(1,1),object_init_pose[:object_num*7]))
+            plant.SetPositions(plant_context, joint_position)
+            for i in range(robot_num):
+                robot_attach_pose[i+1] = RigidTransform2Array(plant.CalcRelativeTransform(plant_context, plant.world_frame(), iiwa_attach_frame[i]))
+            # find the convex region label
+            if "pick" in v:
+                if "object_1" in v:
+                    current_moving_object = 1
+                index = findIndex(v,'target')
+                object_in_robot_index = index[0] + 1
+                iiwa_gripper = close_gripper
+            elif "handover" in v and "connect" not in v:
+                index = findIndex(v,'handover')
+                object_in_robot_index = index[1] + 1
+                iiwa_gripper = open_gripper
+                spot_gripper = spot_close_gripper
+                if current_moving_object == 3:
+                    q_index = index[0] + 1
+            elif "place" in v:
+                index = findIndex(v,'target')
+                spot_gripper = spot_open_gripper
+            joint_position = np.concatenate((trajectory.value(t)[0:7],iiwa_gripper.reshape(2,1), trajectory.value(t)[7:16],spot_gripper.reshape(1,1),robot_attach_pose[object_in_robot_index]))
+            plant.SetPositions(plant_context, joint_position)
+            visualizer.ForcedPublish(visualizer_context)
 
+        count = count + 1
+    visualizer.StopRecording()
+    visualizer.PublishRecording()
+    
 def write_path_file(diagram, plant, visualizer, path, vertex_array):
     diagram_context = diagram.CreateDefaultContext()
     plant_context = diagram.GetMutableSubsystemContext(plant, diagram_context)

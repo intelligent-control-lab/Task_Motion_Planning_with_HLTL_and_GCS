@@ -276,5 +276,4 @@ if SHOW_ROBOT == True:
         html_file.write(html_str)
         
 while 1:
-    ipdb.set_trace()
     a = 0

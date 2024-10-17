@@ -15,8 +15,12 @@ from hltl2gcs.support_functions import AddShape
 from hltl2gcs.support_functions import RigidTransform2Array,show_robot_2_iiwa_conveyor,findIndex, construct_labeled_convex_region, construct_connected_convex_region_RRT,RefineRegion
 from rrt.rrt_4_iiwa_rectangular_problem import IiwaProblem, rrt_planning
 
+# show robot in meshcat
 SHOW_ROBOT = True
+
+# optimize time and path length 
 OPT_TIME = True
+
 # defined your mosek solver path
 os.environ["MOSEKLM_LICENSE_FILE"] = "/opt/mosek/mosek.lic"   
 
@@ -354,8 +358,6 @@ bgcs = ts.Product(dfa, robot_init, order, continuity, is_handover, connect_label
 # python gcs planning code 
 path, path_with_gripper, vertex_array = bgcs.SolveShortestPath(OPT_TIME)
 
-dt = 0.02
-t = 0
 if SHOW_ROBOT == True:
     q_object1_attach = RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[0.6, 0.2, 0.7])
     q_object2_attach = RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[0.6, 0.0, 0.7])
