@@ -294,13 +294,6 @@ class FiniteAutomaton(DirectedGraph):
         # update the non-leaf specifications due to one step expansion of a leaf specification
         # Check whether any progress in the current spec is allowed
         # The acceptance of leaf spec should forward the progress of non-leaf spec
-        cur_predicate = [symbols(leaf_spec)]
-        phis_progress_list, \
-            partition_path_list = self.compute_non_leaf_progress(curr_vertex_idx, leaf_spec, spec_buchi_graphs,
-                                                                cur_predicate, path_to_root, tmp_product_buchi_state) 
-        pred = path_to_root[leaf_spec][1]
-        if self.vertex_idx_to_phis_progress[curr_vertex_idx][0][pred] ==  phis_progress_list[0][pred]:
-            return
         
         cur_predicate = []
         if next_buchi_state in buchi_graph.graph['accept']:

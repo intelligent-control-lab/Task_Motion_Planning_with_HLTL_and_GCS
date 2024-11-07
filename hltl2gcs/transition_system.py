@@ -871,10 +871,16 @@ class TransitionSystem(DirectedGraph):
               
                 if (q_source, q_target) not in fa.edges:
                     continue
-               
                 # get the target regions involved in two essential vertices
                 regions_source = self.labels[s_source]
                 regions_target = self.labels[s_target]
+                
+                # node should make progress unless for initial states
+                if fa.labels[q_source] == fa.labels[q_target]:
+                    if not (str([['']] * self.num_robot) in str(regions_source) or \
+                        str([['']] * self.num_robot) in str(regions_target)):
+                            continue
+    
                 # build the subgraph from two essential states
                 # find nodes between two essential states from the construction of GCS
                 if str([['']] * self.num_robot) in str(regions_source):
