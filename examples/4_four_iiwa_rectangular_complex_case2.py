@@ -12,7 +12,7 @@ from hltl2gcs.specification import Specification
 from hltl2gcs.transition_system import TransitionSystem
 from hltl2gcs.fa import FiniteAutomaton
 from hltl2gcs.support_functions import AddShape
-from hltl2gcs.support_functions import RigidTransform2Array,show_robot_4_iiwa,findIndex, construct_labeled_convex_region, construct_connected_convex_region_RRT,RefineRegion
+from hltl2gcs.support_functions import RigidTransform2Array,show_robot_4_iiwa_or_case,findIndex, construct_labeled_convex_region, construct_connected_convex_region_RRT,RefineRegion
 from rrt.rrt_4_iiwa_rectangular_problem import IiwaProblem, rrt_planning
 
 SHOW_ROBOT = True
@@ -107,7 +107,7 @@ context = diagram.CreateDefaultContext()
 
 # user defined atomic propositions and GCS label
 robot_num = 4
-object_num = 3 
+object_num = 2
 robot1_init = np.array([0,0,0,0,0,0,0])
 robto2_init = np.array([0,0,0,0,0,0,0])
 robot3_init = np.array([0,0,0,0,0,0,0])
@@ -132,9 +132,9 @@ joint_label = {
 
 atomic_propositions = {
     'target_1_pick_object_1': [joint_label['robot1_in_target1']],
-    'target_2_place_object_3': [joint_label['robot2_in_target2']],
-    'target_3_pick_object_3': [joint_label['robot3_in_target3']],
-    'target_4_place_object_1': [joint_label['robot4_in_target4']],
+    'target_2_place_object_2': [joint_label['robot2_in_target2']],
+    'target_3_pick_object_1': [joint_label['robot3_in_target3']],
+    'target_4_place_object_2': [joint_label['robot4_in_target4']],
     'target_5_pick_object_2': [joint_label['robot1_in_target5']],
     'target_6_place_object_2': [joint_label['robot4_in_target6']],
 }
@@ -152,23 +152,25 @@ gcs_label = {
 }
 
 # user define H-LTL Specification
-spec100 = "(F (target_1_pick_object_1 & F (target_4_place_object_1)))"
-spec200 = "(F (target_5_pick_object_2 & F (target_6_place_object_2)))"
-spec300 = "(F (target_3_pick_object_3 & F (target_2_place_object_3)))"
+# spec100 = "(F (target_1_pick_object_1 & F (target_4_place_object_1)))"
+# spec200 = "(F (target_5_pick_object_2 & F (target_6_place_object_2)))"
+spec100 = "(F (target_3_pick_object_1 & F (target_2_place_object_1)))"
+spec200 = "(F (target_5_pick_object_2 & F (target_6_place_object_2 | target_4_place_object_2)))"
 is_handover = True     
 
 specs = Specification()
 if args.case == -1:
     hierarchy = []
     level_one = dict()
-    level_one["p0"] = "F (p100 & F (p200 & F p300))"
+    # level_one["p0"] = "F (p100 & F (p200 & F p300))"
+    level_one["p0"] = "F (p100 & F p200)"
     hierarchy.append(level_one)
     level_two = dict()
     level_two["p100"] = spec100
     level_two["p200"] = spec200
-    level_two["p300"] = spec300
+    # level_two["p300"] = spec300
     hierarchy.append(level_two)
-    specs.hierarchy = hierarchy    
+    specs.hierarchy = hierarchy
 else:
     specs.get_task_specification(task=args.task, case=args.case)
     
@@ -255,14 +257,14 @@ if SHOW_ROBOT == True:
     q_object2_init = RigidTransform2Array(RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[1.0, -0.52, 0.1]))
     q_object3_init = RigidTransform2Array(RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[0.5, -0.52, 0.1]))
 
-    q_object1_drop = RigidTransform2Array(RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[0.8, 1.8, 0.1]))
-    q_object2_drop = RigidTransform2Array(RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[0, 1.8, 0.1]))
-    q_object3_drop = RigidTransform2Array(RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[1.3, 1.8, 0.1]))
+    q_object1_drop = RigidTransform2Array(RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[0, 1.8, 0.1]))
+    q_object2_drop = RigidTransform2Array(RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[1.3, 1.8, 0.1]))
+    q_object3_drop = RigidTransform2Array(RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[0.8, 1.8, 0.1]))
     
-    show_robot_4_iiwa(diagram, plant, visualizer,robot_num, q_object1_init,q_object2_init,q_object3_init, q_object1_drop,q_object2_drop,q_object3_drop, path_with_gripper, vertex_array, iiwa_attach_frame)
+    show_robot_4_iiwa_or_case(diagram, plant, visualizer,robot_num, q_object1_init,q_object2_init,q_object3_init, q_object1_drop,q_object2_drop,q_object3_drop, path_with_gripper, vertex_array, iiwa_attach_frame)
     
     html_str = meshcat.StaticHtml()
-    file_path = "../media/four_robot_close_three_object_hand_over.html"
+    file_path = "../media/four_iiwa_rectangular_or_case.html"
     with open(file_path, "w") as html_file:
         html_file.write(html_str)
 while 1:
