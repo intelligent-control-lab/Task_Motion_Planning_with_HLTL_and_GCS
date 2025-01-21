@@ -13,7 +13,7 @@ from rrt.rrt_2d_problem_complex import robot_2d_RRTProblem, rrt_planning
 
 Draw_baseline = False
 run_rrt = True
-run_GCS = True
+run_GCS = False
 
 # defined your mosek solver path
 os.environ["MOSEKLM_LICENSE_FILE"] = "/opt/mosek/mosek.lic"
@@ -183,7 +183,7 @@ ax.set_xlabel('x')
 ax.set_ylabel('y')
 ax.set_title('RRT Guided Convex Region Construction')
 # ax.set_title('Naive Convex Region Construction')
-ax.legend()
+# ax.legend()
 plt.grid(True)
 
 # Save the plot as a PNG file

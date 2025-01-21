@@ -107,6 +107,7 @@ class BezierGraphOfConvexSetsHandover(DirectedGraph):
                 vertex_label[u] = vertex_label[u] + ",(" + task_label + ")"
                 # self.edges.remove((u,v))
 
+
         # remover the edge with same gcs label
         target_edges = []
         for edge in essential_edges:
@@ -115,11 +116,17 @@ class BezierGraphOfConvexSetsHandover(DirectedGraph):
             # f_q = self.fa_labels[gcs_vertices_to_product_vertices[edge[0]][0]]
             v_q = self.fa_labels[gcs_vertices_to_product_vertices[edge[1]][1]]   
             if u_s == v_s:
+                # only for or case!
+                # if v_q.count('accept_3') != object_num -1:
+                
                 if v_q.count('accept_3') != object_num:
                 # print(f_q,v_q)
                 # if '2' in str(f_q) or '2' in str(v_q) or 'init_1' in str(f_q) or 'init_1' in str(v_q):
                     target_edges.append(edge)
+
+        # import ipdb
         # ipdb.set_trace()     
+        # target_edges = []
         for e in target_edges:
             self.edges.remove((e[0],e[1]))
         

@@ -123,7 +123,7 @@ class TransitionSystem(DirectedGraph):
         elif "connect" in result_string:
             self.target_connection_vertices_set.append(convex_set)
             self.target_connection_labels.append(labels)
-        elif "handover" in result_string:
+        elif "handover" in result_string or "obstacle" in result_string:
             self.handover_vertices_set.append(convex_set)
             self.handover_labels.append(labels)
         elif "target" in result_string:
@@ -168,7 +168,7 @@ class TransitionSystem(DirectedGraph):
             self.partitions[vertex_index] = self.target_vertices_set[i]
             self.labels[vertex_index] = self.target_labels[i]
             self.v_idx += 1
-        # ipdb.set_trace()
+
         connection_dict= dict()
         # # Iterate over pairwise combinations
         for pair in list(combinations(self.target_vertices, 2)):
@@ -196,18 +196,35 @@ class TransitionSystem(DirectedGraph):
                 current_handover_region = str(sorted_nums[0][0]+1) + str(sorted_nums[1][0]+1)
                 dict_1 = self.AddEdgewithConnectionRRT(v1,v2)
                 dict_2 = self.AddEdgewithHandoverConnectionRRT(v1,v2)
-                # ipdb.set_trace()
+                # dict_4 = self.AddEdgewithHandoverConnectionRRT(v1,v2,True)
+
                 if any(value == [] for value in dict_2.values()):
                     dict_3 = dict_1
                 else:
                     dict_3 = {k: dict_1[k] + dict_2[k] for k in dict_1}
+                # if any(value == [] for value in dict_4.values()):
+                #     dict_3 = dict_3
+                # else:
+                #     dict_3 = {k: dict_3[k] + dict_4[k] for k in dict_4}
+
                 connection_dict.update(dict_3)
                 dict_1 = self.AddEdgewithConnectionRRT(v2,v1)
                 dict_2 = self.AddEdgewithHandoverConnectionRRT(v2,v1)
+                # dict_4 = self.AddEdgewithHandoverConnectionRRT(v2,v1,True)
                 if any(value == [] for value in dict_2.values()):
                     dict_3 = dict_1
                 else:
                     dict_3 = {k: dict_1[k] + dict_2[k] for k in dict_1}
+
+                if str(l1) == "[['target_1'], [''], [''], ['']]" and str(l2) == "[[''], [''], [''], ['target_4']]":
+                    dict_4 = self.AddEdgewithHandoverConnectionRRT(v2,v1,True)
+                    # ipdb.set_trace()
+                    if any(value == [] for value in dict_4.values()):
+                        dict_3 = dict_3
+                    else:
+                        # ipdb.set_trace()
+                        dict_3 = {k: dict_3[k] + dict_4[k] for k in dict_4}
+                    
                 connection_dict.update(dict_3)
 
         self.AddEdgewithConnectionToInitRRT()
@@ -309,7 +326,7 @@ class TransitionSystem(DirectedGraph):
         # ipdb.set_trace()
         return connect_dict
 
-    def AddEdgewithHandoverConnectionRRT(self, source_vertex, target_vertex):
+    def AddEdgewithHandoverConnectionRRT(self, source_vertex, target_vertex, has_obstacle = False):
         """
         Add a transition between two partitions (aka states aka vertices).
 
@@ -336,8 +353,26 @@ class TransitionSystem(DirectedGraph):
             ['handover'] if item[0] != '' else ['']
             for item in merged_list
         ]
-        
-        
+        if has_obstacle == False:
+            handover_label = [
+                ['handover'] if item[0] != '' else ['']
+                for item in merged_list
+            ]
+            # only for the fake case 1, changed later
+            if str(l1) == "[[''], [''], [''], ['target_4']]" and str(l2) == "[['target_1'], [''], [''], ['']]":
+                handover_label = ['das']
+            else:
+                handover_label = [
+                    ['handover'] if item[0] != '' else ['']
+                    for item in merged_list
+                ]
+        else:
+            if str(l1) == "[[''], [''], [''], ['target_4']]":
+                handover_label = [
+                    ['is_obstacle'] if item[0] != '' else ['']
+                    for item in merged_list
+                ]
+
         # hard code only for conveyor case:[changed later]
         if str(l1) == "[['target_1'], [''], ['']]":
             handover_label = [['handover1'], ['handover1'],['']]
@@ -361,14 +396,19 @@ class TransitionSystem(DirectedGraph):
                 self.labels[connection_vertex_index] = f'{self.target_connection_labels[i]}{self.num_connection}'
                 self.v_idx += 1
                 self.num_connection += 1
+                # if str(l1) == "[[''], [''], [''], ['target_4']]":
+                #     ipdb.set_trace()
                 connect_index.append(connection_vertex_index)
                 conect_label.append(self.labels[connection_vertex_index])
-
+        # if str(l1) == "[[''], [''], [''], ['target_4']]":
+        #     ipdb.set_trace()
         if forward_order:
             # add a handover vertex
             for i, sublist in enumerate(self.handover_labels):
                 if str(handover_label) in str(sublist):
                     # ipdb.set_trace()
+                    # if str(l1) == "[[''], [''], [''], ['target_4']]":
+                    #     ipdb.set_trace()
                     connection_vertex_index = self.v_idx
                     self.vertices.append(connection_vertex_index)
                     self.partitions[connection_vertex_index] = self.handover_vertices_set[i]
@@ -377,7 +417,8 @@ class TransitionSystem(DirectedGraph):
                     self.num_connection += 1
                     connect_index.append(connection_vertex_index)
                     conect_label.append(self.labels[connection_vertex_index])
-            
+                    # ipdb.set_trace()
+
             # add a handover to l2 vertex
             name = f"{handover_label}_connect_{l2}"
             for i, sublist in enumerate(self.target_connection_labels):
