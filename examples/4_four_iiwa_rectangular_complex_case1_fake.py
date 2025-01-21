@@ -27,7 +27,8 @@ meshcat = StartMeshcat()
 builder = DiagramBuilder()
 plant, scene_graph = AddMultibodyPlantSceneGraph(builder, time_step=1e-4)
 parser = Parser(plant)
-parser.package_map().Add("drake_project", "../")    
+parser.package_map().Add("drake_project", "../")     
+
 if SHOW_ROBOT == True: 
     directives = LoadModelDirectives("models/four_iiwa_rectangular/four_robot_rectangular.yaml")
 else:
