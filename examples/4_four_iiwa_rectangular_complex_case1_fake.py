@@ -231,7 +231,7 @@ gcs_label = {
     'robot4_in_target6': [[""], [""],[""],["target_6"]],
     'robot14_handover': [["handover"], [""],[""],["handover"]],
     'robot23_handover': [[""], ["handover"],["handover"],[""]],
-    'robot14_handover_with_obs': [["is_obstacle"], [""],[""],["is_obstacle"]],
+    'robot14_handover_with_obs': [["obstacle"], [""],[""],["obstacle"]],
 }
 
 # user define H-LTL Specification
@@ -321,7 +321,7 @@ ts.AddPartition(S_label['robot4_in_target6'], [[""], [""],[""],["target_6"]])
 ts.AddPartition(S_label['robot14_handover'], [["handover"], [""],[""],["handover"]])
 ts.AddPartition(S_label['robot23_handover'], [[""],["handover"], ["handover"],[""]])
 
-ts.AddPartition(S_label['robot14_handover_with_obs'], [["is_obstacle"], [""],[""],["is_obstacle"]])
+ts.AddPartition(S_label['robot14_handover_with_obs'], [["obstacle"], [""],[""],["obstacle"]])
 
 for item in combinations_list:  # do I need conbined each other region
     name = f"{item[0]}_connect_{item[1]}"

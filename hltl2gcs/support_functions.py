@@ -733,8 +733,8 @@ def show_robot_4_iiwa_obs(diagram, plant, visualizer,robot_num, q_object1_init,q
                 q_index = index[1] + 1
                 if current_moving_object == 3:
                     q_index = index[0] - 1
-            elif "is_obstacle" in v and "connect" not in v:
-                index = findIndex(v,'is_obstacle')
+            elif "obstacle" in v and "connect" not in v:
+                index = findIndex(v,'obstacle')
                 q_index = index[1] + 1
                 if current_moving_object == 3:
                     q_index = index[0] + 1
