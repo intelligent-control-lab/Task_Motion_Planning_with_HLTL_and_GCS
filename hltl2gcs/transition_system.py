@@ -359,13 +359,13 @@ class TransitionSystem(DirectedGraph):
                 for item in merged_list
             ]
             # only for the fake case 1, changed later
-            if str(l1) == "[[''], [''], [''], ['target_4']]" and str(l2) == "[['target_1'], [''], [''], ['']]":
-                handover_label = ['das']
-            else:
-                handover_label = [
-                    ['handover'] if item[0] != '' else ['']
-                    for item in merged_list
-                ]
+            # if str(l1) == "[[''], [''], [''], ['target_4']]" and str(l2) == "[['target_1'], [''], [''], ['']]":
+            #     handover_label = ['das']
+            # else:
+            #     handover_label = [
+            #         ['handover'] if item[0] != '' else ['']
+            #         for item in merged_list
+            #     ]
         else:
             if str(l1) == "[[''], [''], [''], ['target_4']]":
                 handover_label = [

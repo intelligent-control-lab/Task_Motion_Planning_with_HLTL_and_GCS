@@ -12,7 +12,7 @@ from hltl2gcs.specification import Specification
 from hltl2gcs.transition_system import TransitionSystem
 from hltl2gcs.fa import FiniteAutomaton
 from hltl2gcs.support_functions import AddShape
-from hltl2gcs.support_functions import RigidTransform2Array,show_robot_4_iiwa,findIndex, construct_labeled_convex_region, construct_connected_convex_region_RRT,RefineRegion
+from hltl2gcs.support_functions import RigidTransform2Array,show_robot_4_iiwa,findIndex, construct_labeled_convex_region, construct_connected_convex_region_RRT,RefineRegion, show_robot_4_iiwa_obs
 from rrt.rrt_4_iiwa_rectangular_problem import IiwaProblem, rrt_planning
 
 SHOW_ROBOT = True
@@ -27,7 +27,8 @@ meshcat = StartMeshcat()
 builder = DiagramBuilder()
 plant, scene_graph = AddMultibodyPlantSceneGraph(builder, time_step=1e-4)
 parser = Parser(plant)
-parser.package_map().Add("drake_project", "../")    
+parser.package_map().Add("drake_project", "../")     
+
 if SHOW_ROBOT == True: 
     directives = LoadModelDirectives("models/four_iiwa_rectangular/four_robot_rectangular.yaml")
 else:
@@ -185,7 +186,7 @@ context = diagram.CreateDefaultContext()
 
 # user defined atomic propositions and GCS label
 robot_num = 4
-object_num = 1
+object_num = 3
 robot1_init = np.array([0,0,0,0,0,0,0])
 robto2_init = np.array([0,0,0,0,0,0,0])
 robot3_init = np.array([0,0,0,0,0,0,0])
@@ -202,11 +203,11 @@ joint_label = {
     'robot4_in_target6': np.concatenate((robot1_init, robto2_init, robot3_init, np.array([ -1.74430791, -0.56789688,  0.21842836,1.82502479, -0.16128287, -0.75835055, -3.0153668]))),
     'robot12_handover': np.concatenate((np.array([0.79695899,  0.14918829, -0.31106168 ,-1.27638425 , 1.62359274 , 1.52400368, -0.16181519, -0.60579563 , 0.40223694 ,-1.16592747, -1.13810773,  1.52661092, 0.5796179   ,0.80291075]), robot3_init, robot4_init)),
     'robot13_handover': np.concatenate((np.array([0.79695899-1.57,  0.14918829, -0.31106168 ,-1.27638425 , 1.62359274 , 1.52400368,-0.16181519]), robto2_init, np.array([-0.60579563 -1.57, 0.40223694 ,-1.16592747, -1.13810773,  1.52661092,0.5796179   ,0.80291075]), robot4_init)),
-    'robot14_handover': np.concatenate((np.array([ -2.22121086, -0.50178306, -0.19285722,  1.07670171, -0.11394809,0.04316638,  1.36414584]), robto2_init, robot3_init, np.array([  0.906443  , -0.46884826, -0.1953321 ,  1.05604502,  0.32607705, -0.09930808,  1.74658066]))),
+    'robot14_handover_with_obs': np.concatenate((np.array([ -2.22121086, -0.50178306, -0.19285722,  1.07670171, -0.11394809,0.04316638,  1.36414584]), robto2_init, robot3_init, np.array([  0.906443  , -0.46884826, -0.1953321 ,  1.05604502,  0.32607705, -0.09930808,  1.74658066]))),
     'robot23_handover': np.concatenate((robot1_init, np.array([-0.63080611,0.43498298, -0.22285671, -0.7752741 ,  0.05027981,  0.55517053,-0.08047174,-0.71987317, -0.660508  ,-0.15260415,  0.7329806 ,  0.0699776 ,  0.00473927,  0.15229864]), robot4_init)),
     'robot24_handover': np.concatenate((robot1_init, np.array([ 0.79695899-1.57,  0.14918829, -0.31106168 ,-1.27638425 , 1.62359274 , 1.52400368, -0.16181519]), robot3_init, np.array([ -0.60579563 -1.57, 0.40223694 ,-1.16592747, -1.13810773,  1.52661092, 0.5796179   ,0.80291075]))),
     'robot34_handover': np.concatenate((robot1_init, robto2_init, np.array([0.79695899,  0.14918829, -0.31106168 ,-1.27638425 , 1.62359274 , 1.52400368,-0.16181519, -0.60579563 , 0.40223694 ,-1.16592747, -1.13810773,  1.52661092, 0.5796179   ,0.80291075]))),
-    'robot14_handover_with_obs': np.concatenate((np.array([ -1.97671138, -0.84791535,  0.40521569,  1.25108484,  0.78789367,0.86344809,  1.78934326]), robto2_init, robot3_init, np.array([ 0.13238287, -1.32410739,  0.75986067, 0.33877776,  0.84189185, -0.48731447,  1.98019651]))),
+    'robot14_handover': np.concatenate((np.array([ -1.97671138, -0.84791535,  0.40521569,  1.25108484,  0.78789367,0.86344809,  1.78934326]), robto2_init, robot3_init, np.array([ 0.13238287, -1.32410739,  0.75986067, 0.33877776,  0.84189185, -0.48731447,  1.98019651]))),
 }
 
 atomic_propositions = {
@@ -216,10 +217,8 @@ atomic_propositions = {
     'target_4_place_object_1': [joint_label['robot4_in_target4']],
     'target_5_pick_object_2': [joint_label['robot1_in_target5']],
     'target_6_place_object_2': [joint_label['robot4_in_target6']],
-    # 'target_1_place_object_3': [joint_label['robot1_in_target1']],
-    # 'target_4_pick_object_3': [joint_label['robot4_in_target4']],
-    'target_1_place_object_1': [joint_label['robot1_in_target1']],
-    'target_4_pick_object_1': [joint_label['robot4_in_target4']],
+    'target_1_place_object_3': [joint_label['robot1_in_target1']],
+    'target_4_pick_object_3': [joint_label['robot4_in_target4']],
 }
 
 gcs_label = {
@@ -236,34 +235,41 @@ gcs_label = {
 }
 
 # user define H-LTL Specification
-# spec100 = "(F (target_1_pick_object_1 & F (target_4_place_object_1)))"
-# spec200 = "(F (target_5_pick_object_2 & F (target_6_place_object_2)))"
-# # spec300 = "(F (target_4_pick_object_1 & F (target_1_place_object_1)))"
-# spec300 = "(F (target_4_pick_object_3  & ! obstacle U target_1_place_object_3))"
-spec100 = "(F (target_4_pick_object_1  & ! obstacle U target_1_place_object_1))"
+spec100 = "(F (target_1_pick_object_1 & F (target_4_place_object_1)))"
+spec200 = "(F (target_5_pick_object_2 & F (target_6_place_object_2)))"
+spec300 = "(F (target_4_pick_object_3  & ! obstacle U target_1_place_object_3))"
 
-
-spec300 = "(F (target_4_pick_object_1 & F (target_1_place_object_1 | target_5_place_object_1)))"
 is_handover = True     
 
 specs = Specification()
 if args.case == -1:
     hierarchy = []
     level_one = dict()
-    # level_one["p0"] = "F (p100 & F (p200 & F p300))"    
-    level_one["p0"] = "F (p100 | p200)" 
-    level_one["p0"] = "F p100"
+    level_one["p0"] = "F (p100 & F (p200 & F p300))"    
+    # level_one["p0"] = "F (p100 | p200)" 
+    # level_one["p0"] = "F p100"
     
     hierarchy.append(level_one)
     level_two = dict()
     level_two["p100"] = spec100
-    # level_two["p200"] = spec200
-    # level_two["p300"] = spec300
+    level_two["p200"] = spec200
+    level_two["p300"] = spec300
     hierarchy.append(level_two)
     specs.hierarchy = hierarchy    
 else:
     specs.get_task_specification(task=args.task, case=args.case)
+   
+# test
+# iris_region_path = 'four_iiwa_rectangular_complex2'
+# name = 'robot14_handover_connect_robot4_in_target4'
+# with open(f"Iris_regions/{iris_region_path}/{name}.pkl1", "rb") as f:
+#     hpoly_list = pickle.load(f)
     
+# hpoly_list.reverse()
+# with open(f"Iris_regions/{iris_region_path}/{name}.pkl", "wb") as f:
+#     pickle.dump(hpoly_list,f)
+    
+# ipdb.set_trace() 
 # Construct labeled and connected convex sets using IRIS. This can be quite slow, so we do it offline and save the results. 
 iris_region_path = 'four_iiwa_rectangular_complex'
 perform_iris_label = False
@@ -358,10 +364,10 @@ if SHOW_ROBOT == True:
     q_object2_drop = RigidTransform2Array(RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[0, 1.8, 0.1]))
     q_object3_drop = RigidTransform2Array(RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[1.3, 1.8, 0.1]))
     
+    # show_robot_4_iiwa_obs(diagram, plant, visualizer,robot_num, q_object1_init,q_object2_init,q_object3_init, q_object1_drop,q_object2_drop,q_object3_drop, path_with_gripper, vertex_array, iiwa_attach_frame)
     show_robot_4_iiwa(diagram, plant, visualizer,robot_num, q_object1_init,q_object2_init,q_object3_init, q_object1_drop,q_object2_drop,q_object3_drop, path_with_gripper, vertex_array, iiwa_attach_frame)
-    
     html_str = meshcat.StaticHtml()
-    file_path = "../media/four_robot_close_three_object_hand_over.html"
+    file_path = "../media/four_iiwa_rectangular_with_obs.html"
     with open(file_path, "w") as html_file:
         html_file.write(html_str)
 while 1:
