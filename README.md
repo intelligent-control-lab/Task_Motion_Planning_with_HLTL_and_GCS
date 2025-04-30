@@ -10,13 +10,6 @@ This repository contains code to accompany the paper [*Hierarchical Temporal Log
 - [MONA](https://www.brics.dk/mona/download.html)
 - [ltlf2dfa](https://github.com/whitemech/LTLf2DFA)
 - [MOSEK](https://www.mosek.com/) (license only)
-- treelib
-- matplotlib
-- scipy
-- sympy
-- numpy
-- graphviz
-- pydot
 
 Of these, only MONA and MOSEK require special consideration: all others can be
 installed with `pip`. For MOSEK, you only need a valid license: MOSEK itself is
