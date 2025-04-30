@@ -1,6 +1,6 @@
 # Task_Motion_Planning_with_HLTL_and_GCS
 
-A fast and scalable motion planning framework for tasks expressed in Linear Temporal Logic (LTL). 
+A fast and scalable task and motion planning framework for tasks expressed in Hierarchical Linear Temporal Logic (H-LTL). 
 
 This repository contains code to accompany the paper [*Hierarchical Temporal Logic Task and Motion Planning for Multi-Robot Systems*](https://arxiv.org/abs/2504.18899) by Zhongqi Wei, Xusheng Luo and Changliu Liu. 
 
