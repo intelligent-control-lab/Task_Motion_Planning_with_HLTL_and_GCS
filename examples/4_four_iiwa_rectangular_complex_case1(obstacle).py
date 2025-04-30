@@ -45,22 +45,7 @@ block2 = AddShape(
 block3 = AddShape(
     plant, Box(0.2, 0.05, 0.05), "block3", mass= 1, mu = 1,color=[1, 0, 0, 1]
 )
-if SHOW_ROBOT == True: 
-    # plant.WeldFrames(
-    #     plant.world_frame(),
-    #     plant.GetFrameByName("block1", block1),
-    #     RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[0, -0.52, 0.1]),
-    # )
-    # plant.WeldFrames(
-    #     plant.world_frame(),
-    #     plant.GetFrameByName("block2", block2),
-    #     RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[1.0, -0.52, 0.1]),
-    # )
-    # plant.WeldFrames(
-    #     plant.world_frame(),
-    #     plant.GetFrameByName("block3", block3),
-    #     RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[0.5, -0.52, 0.1]),
-    # )  
+if SHOW_ROBOT == True:  
     plant.SetDefaultFreeBodyPose(
         plant.GetBodyByName("block1", block1),
         RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[0, -0.52, 0.1]),
@@ -138,52 +123,6 @@ diagram_context = diagram.CreateDefaultContext()
 plant_context = diagram.GetMutableSubsystemContext(plant, diagram_context)
 context = diagram.CreateDefaultContext()
 
-# q1_init = np.array([0,0,0,0,0,0,0])
-# q2_init = np.array([0,0,0,0,0,0,0])
-# q3_init = np.array([0,0,0,0,0,0,0])
-# q4_init = np.array([0,0,0,0,0,0,0])
-# q14_hand_over_q1 = np.array([ -2.22121086, -0.50178306, -0.19285722,  1.07670171, -0.11394809,
-#   0.04316638,  1.36414584])
-# q14_hand_over_q4 = np.array([  0.906443  , -0.46884826, -0.1953321 ,
-#   1.05604502,  0.32607705, -0.09930808,  1.74658066])
-# ik = InverseKinematics(plant, plant_context)
-# # Add position box constrains
-# tool2block_dis = 0.17
-# ik.AddPositionConstraint(
-#     iiwa_1_tool_frame,
-#     [tool2block_dis*2 + 0.02, 0.0, 0.0],
-#     iiwa_4_tool_frame,
-#     [-0.0, -0.0, -0.0],
-#     [0.0, 0.0, 0.0],
-# )
-
-# # Add orientations constraints
-# ik.AddOrientationConstraint(
-#     iiwa_1_tool_frame,
-#     RotationMatrix(), 
-#     iiwa_4_tool_frame,
-#     RollPitchYaw(0,0,np.pi).ToRotationMatrix(),
-#     0.01,
-# )
-# ik.AddMinimumDistanceLowerBoundConstraint(0.001, 0.1)
-# prog = ik.get_mutable_prog()
-# q = ik.q()
-# # iiwa_1_ref = np.array([1.57,-1,0,-1.57,0,1,0])
-# # iiwa_2_ref = np.array([-1.57,-1,0,-1.57,0,1,0])
-# wsg_open = np.array([0.1,0.1])
-# q_ref = np.concatenate((q14_hand_over_q1,wsg_open,q1_init,wsg_open,q1_init,wsg_open,q14_hand_over_q4, wsg_open))    # initial
-# prog.SetInitialGuess(q, q_ref)
-
-# res = Solve(ik.prog())
-# assert res.is_success()
-# q = res.GetSolution(ik.q())
-# print(np.array2string(q, separator=', '))
-
-# plant.SetPositions(plant_context, q)
-# # plant.SetPositions(plant_context, np.zeros(plant.num_positions()))
-# diagram.ForcedPublish(diagram_context)
-# ipdb.set_trace()
-
 # user defined atomic propositions and GCS label
 robot_num = 4
 object_num = 3
@@ -241,14 +180,12 @@ spec300 = "(F (target_4_pick_object_3  & ! obstacle U target_1_place_object_3))"
 
 is_handover = True     
 
+
 specs = Specification()
 if args.case == -1:
     hierarchy = []
     level_one = dict()
     level_one["p0"] = "F (p100 & F (p200 & F p300))"    
-    # level_one["p0"] = "F (p100 | p200)" 
-    # level_one["p0"] = "F p100"
-    
     hierarchy.append(level_one)
     level_two = dict()
     level_two["p100"] = spec100
@@ -341,7 +278,7 @@ for item in combinations_list:  # do I need conbined each other region
         ts.AddPartition(S_connect[f'{name}'][i], [[f"{label}_{i}"], [f"{label}_{i}"]])
 
 connect_label = ts.AddEdgesFromRRT()
-# ipdb.set_trace()
+
 dfa_start_time = time.time()
 dfa = FiniteAutomaton(specs, args)
 dfa_time = time.time() - dfa_start_time

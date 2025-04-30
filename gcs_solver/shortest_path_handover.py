@@ -530,7 +530,7 @@ class ShortestPathConstraints():
                     
                 assert n_incoming_parent_set == len(phi_parent_incoming)
                 # big M constrains
-                m = 20
+                m = 2
 
                 # make sure two pick is not connected
                 if ('target' in vertex) and ('place' in vertex):

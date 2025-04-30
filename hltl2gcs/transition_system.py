@@ -218,7 +218,7 @@ class TransitionSystem(DirectedGraph):
 
                 if str(l1) == "[['target_1'], [''], [''], ['']]" and str(l2) == "[[''], [''], [''], ['target_4']]":
                     dict_4 = self.AddEdgewithHandoverConnectionRRT(v2,v1,True)
-                    # ipdb.set_trace()
+
                     if any(value == [] for value in dict_4.values()):
                         dict_3 = dict_3
                     else:
@@ -372,7 +372,8 @@ class TransitionSystem(DirectedGraph):
                     ['obstacle'] if item[0] != '' else ['']
                     for item in merged_list
                 ]
-
+            # ipdb.set_trace()
+        # ipdb.set_trace()
         # hard code only for conveyor case:[changed later]
         if str(l1) == "[['target_1'], [''], ['']]":
             handover_label = [['handover1'], ['handover1'],['']]
@@ -511,6 +512,8 @@ class TransitionSystem(DirectedGraph):
             assert edge not in self.edges, "edge already exists!"
             self.edges.append(edge)           
 
+        # if str(handover_label) == "[['obstacle'], [''], [''], ['obstacle']]":
+        #     ipdb.set_trace()
         connect_dict[connect_key] = conect_label
 
         return connect_dict
@@ -792,7 +795,7 @@ class TransitionSystem(DirectedGraph):
         prune_time = time.time()
         edges, essential_edges = self.prune(prod_vertices, edges, prod_states, fa, essential_pairs, args, regions_in_paris)
         print(f"prune time: {time.time() - prune_time}")
-        
+ 
         # edges only include edges between essential states, so edges leading to accepting automaton states are not included
         edges.append((start_vertex, self.prod_initial_vertex))
         edges.extend(accepting_edges)

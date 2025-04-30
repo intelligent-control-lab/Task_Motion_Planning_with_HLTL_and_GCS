@@ -107,7 +107,7 @@ context = diagram.CreateDefaultContext()
 
 # user defined atomic propositions and GCS label
 robot_num = 4
-object_num = 3
+object_num = 2
 robot1_init = np.array([0,0,0,0,0,0,0])
 robto2_init = np.array([0,0,0,0,0,0,0])
 robot3_init = np.array([0,0,0,0,0,0,0])

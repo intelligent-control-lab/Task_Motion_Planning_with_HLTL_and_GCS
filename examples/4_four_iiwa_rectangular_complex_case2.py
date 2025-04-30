@@ -47,7 +47,7 @@ block3 = AddShape(
 if SHOW_ROBOT == True: 
     plant.SetDefaultFreeBodyPose(
         plant.GetBodyByName("block1", block1),
-        RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[0, -0.52, 0.1]),
+        RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[0.5, -0.52, 0.1]),
     )
     plant.SetDefaultFreeBodyPose(
         plant.GetBodyByName("block2", block2),
@@ -55,7 +55,7 @@ if SHOW_ROBOT == True:
     )
     plant.SetDefaultFreeBodyPose(
         plant.GetBodyByName("block3", block3),
-        RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[0.5, -0.52, 0.1]),
+        RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[0, -0.52, 0.1]),
     )
 else:
     plant.WeldFrames(
@@ -253,8 +253,8 @@ path, path_with_gripper, vertex_array = bgcs.SolveShortestPath()
 
 # show robot in meshcat
 if SHOW_ROBOT == True:
-    q_object1_init = RigidTransform2Array(RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[0, -0.52, 0.1]))
-    q_object2_init = RigidTransform2Array(RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[1.0, -0.52, 0.1]))
+    q_object1_init = RigidTransform2Array(RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[1.0, -0.52, 0.1]))
+    q_object2_init = RigidTransform2Array(RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[0, -0.52, 0.1]))
     q_object3_init = RigidTransform2Array(RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[0.5, -0.52, 0.1]))
 
     q_object1_drop = RigidTransform2Array(RigidTransform(RollPitchYaw(-np.pi/2,np.pi/2,0).ToRotationMatrix(),[0, 1.8, 0.1]))
