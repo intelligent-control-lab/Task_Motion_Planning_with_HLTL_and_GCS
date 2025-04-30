@@ -4,16 +4,6 @@ A fast and scalable task and motion planning framework for tasks expressed in Hi
 
 This repository contains code to accompany the paper [*Hierarchical Temporal Logic Task and Motion Planning for Multi-Robot Systems*](https://arxiv.org/abs/2504.18899) by Zhongqi Wei, Xusheng Luo and Changliu Liu. 
 
-## Installation
-
-Make sure all dependencies are installed, then:
-
-```
-$ git clone https://github.com/vincekurtz/ltl_gcs
-$ cd ltl_gcs
-$ pip install .
-```
-
 ## Dependencies
 
 - [Drake](https://drake.mit.edu/)
