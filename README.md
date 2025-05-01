@@ -31,22 +31,40 @@ The following examples and several other can be found in the `examples`
 directory. Please check the paper [*Hierarchical Temporal Logic Task and Motion Planning for Multi-Robot Systems*](https://arxiv.org/abs/2504.18899) for detailed description of those examples.
 
 1. two-robot motion planning:`examples/1_two_robot_case1.py`
+
    <img src="media/1_two_robot_case1.png" alt="1_two_robot_case1" width="300"/>
-2. two-robot handover:`examples/2_two_robot_case2.py`
    
-3. four-robot handover (scenario 1):`examples/3_four_iiwa_linear_case.py`
-   
-4. four-robot handover (scenario 2):`examples/4_four_iiwa_rectangular_case.py`
-   
-5. four-robot handover with obstacle (scenario 3):`examples/4_four_iiwa_rectangular_complex_case1(obstacle).py`
+3. two-robot handover:`examples/2_two_robot_case2.py`
+
+    <img src="media/2_two_robot_case2.png" alt="2_two_robot_case2" width="300"/>
     
-6. four-robot handover (scenario 4):`examples/4_four_iiwa_rectangular_complex_case1(obstacle)1.py`
+4. four-robot handover (scenario 1):`examples/3_four_iiwa_linear_case.py`
 
-7. four-wx200 robots handover:`examples/5_four_wx200_rectangular_case.py`
-
-8. two-robots with conveyor:`examples/6_two_iiwa_conveyor_case.py`
-
-9. Spot-robot handover:`examples/7_iiwa_spot_handover_case.py`
+    <img src="media/3_four_iiwa_linear_case.png" alt="3_four_iiwa_linear_case" width="300"/>
     
+5. four-robot handover (scenario 2):`examples/4_four_iiwa_rectangular_case.py`
+
+   <img src="media/4_four_iiwa_rectangular_case.png" alt="4_four_iiwa_rectangular_case.png" width="300"/>
+   
+7. four-robot handover with obstacle (scenario 3):`examples/4_four_iiwa_rectangular_complex_case1(obstacle).py`
+
+   <img src="media/4_four_iiwa_rectangular_complex_case1(obstacle).png" alt="4_four_iiwa_rectangular_complex_case1(obstacle)" width="300"/>
+   
+8. four-robot handover (scenario 4):`examples/4_four_iiwa_rectangular_complex_case1(obstacle)1.py`
+
+   <img src="media/4_four_iiwa_rectangular_complex_case1(obstacle)1.png" alt="4_four_iiwa_rectangular_complex_case1(obstacle)" width="300"/>
+
+9. four-wx200 robots handover:`examples/5_four_wx200_rectangular_case.py`
+
+   <img src="media/5_four_wx200_rectangular_case.png" alt="5_four_wx200_rectangular_case.png" width="300"/>
+
+10. two-robots with conveyor:`examples/6_two_iiwa_conveyor_case.py`
+
+   <img src="media/6_two_iiwa_conveyor_case.png" alt="6_two_iiwa_conveyor_case" width="300"/>
+
+11. Spot-robot handover:`examples/7_iiwa_spot_handover_case.py`
+
+   <img src="media/7_iiwa_spot_handover_case.png" alt="6_two_iiwa_conveyor_case" width="300"/>
+
 ## Video
 [![Watch the video](media/video.png)](https://www.youtube.com/watch?v=FPTLGm5iigc)
