@@ -37,4 +37,4 @@ directory. Please check the paper [*Hierarchical Temporal Logic Task and Motion 
 8. two-robots with conveyor:`examples/6_two_iiwa_conveyor_case.py`
 
 ## Video
-[![Watch the video](https://www.youtube.com/watch?v=FPTLGm5iigc/hqdefault.jpg)](https://www.youtube.com/watch?v=FPTLGm5iigc)
+[![Watch the video](media/video.png)](https://www.youtube.com/watch?v=FPTLGm5iigc)
