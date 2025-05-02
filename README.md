@@ -4,6 +4,10 @@ A fast and scalable task and motion planning framework for tasks expressed in Hi
 
 This repository contains code to accompany the paper [*Hierarchical Temporal Logic Task and Motion Planning for Multi-Robot Systems*](https://arxiv.org/abs/2504.18899) by Zhongqi Wei, Xusheng Luo and Changliu Liu. 
 
+## Acknowledge 
+
+The codebased is based on the work [*Temporal Logic Motion Planning with Convex Optimization via Graphs of Convex Sets*](https://github.com/vincekurtz/ltl_gcs) by Vince Kurtz and Hai Lin.
+
 ## Installation
 
 Make sure all dependencies are installed, then:
