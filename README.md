@@ -31,44 +31,67 @@ installed along with Drake.
 
 ## Examples
 
-The following examples and several other can be found in the `examples`
-directory. Please check the paper [*Hierarchical Temporal Logic Task and Motion Planning for Multi-Robot Systems*](https://arxiv.org/abs/2504.18899) for detailed description of those examples.
 
-1. two-robot motion planning:`examples/1_two_robot_case1.py`
+1. **Two-arm handover**
 
-   <img src="media/1_two_robot_case1.png" alt="1_two_robot_case1" width="300"/>
-   
-2. two-robot handover:`examples/2_two_robot_case2.py`
+   `examples/2_two_robot_case2.py`
 
-    <img src="media/2_two_robot_case2.png" alt="2_two_robot_case2" width="300"/>
-    
-3. four-robot handover (scenario 1):`examples/3_four_iiwa_linear_case.py`
+   [![Two-arm handover animated preview](media/task_videos/two_handover.gif)](media/task_videos/two_handover.mp4)
 
-    <img src="media/3_four_iiwa_linear_case.png" alt="3_four_iiwa_linear_case" width="300"/>
-    
-4. four-robot handover (scenario 2):`examples/4_four_iiwa_rectangular_case.py`
+2. **Four-arm linear handover**
 
-   <img src="media/4_four_iiwa_rectangular_case.png" alt="4_four_iiwa_rectangular_case.png" width="300"/>
-   
-5. four-robot handover with obstacle (scenario 3):`examples/4_four_iiwa_rectangular_complex_case1(obstacle).py`
+   `examples/3_four_iiwa_linear_case.py`
 
-   <img src="media/4_four_iiwa_rectangular_complex_case1(obstacle).png" alt="4_four_iiwa_rectangular_complex_case1(obstacle)" width="300"/>
-   
-6. four-robot handover (scenario 4):`examples/4_four_iiwa_rectangular_complex_case1(obstacle)1.py`
+   [![Four-arm linear handover animated preview](media/task_videos/four_linear.gif)](media/task_videos/four_linear.mp4)
 
-   <img src="media/4_four_iiwa_rectangular_complex_case1(obstacle)1.png" alt="4_four_iiwa_rectangular_complex_case1(obstacle)" width="300"/>
+3. **Four-arm rectangular handover**
 
-7. four-wx200 robots handover:`examples/5_four_wx200_rectangular_case.py`
+   `examples/4_four_iiwa_rectangular_case.py`
 
-   <img src="media/5_four_wx200_rectangular_case.png" alt="5_four_wx200_rectangular_case.png" width="300"/>
+   [![Four-arm rectangular handover animated preview](media/task_videos/four_rectangle.gif)](media/task_videos/four_rectangle.mp4)
 
-8. two-robots with conveyor:`examples/6_two_iiwa_conveyor_case.py`
+4. **Handover around an obstacle**
 
-   <img src="media/6_two_iiwa_conveyor_case.png" alt="6_two_iiwa_conveyor_case" width="300"/>
+   `examples/4_four_iiwa_rectangular_complex_case1(obstacle).py`
 
-9. Spot-robot handover:`examples/7_iiwa_spot_handover_case.py`
+   [![Handover around an obstacle animated preview](media/task_videos/four_obstacle.gif)](media/task_videos/four_obstacle.mp4)
 
-   <img src="media/7_iiwa_spot_handover_case.png" alt="6_two_iiwa_conveyor_case" width="300"/>
+5. **Hierarchical obstacle task**
 
-## Video
-[![Watch the video](media/video.png)](https://www.youtube.com/watch?v=FPTLGm5iigc)
+   `examples/4_four_iiwa_rectangular_complex_case1(obstacle)1.py`
+
+   [![Hierarchical obstacle task animated preview](media/task_videos/four_obstacle_hierarchy.gif)](media/task_videos/four_obstacle_hierarchy.mp4)
+
+6. **WX200 hardware handover** — Paper video / hardware experiment
+
+   `examples/5_four_wx200_rectangular_case.py`
+
+   [![WX200 hardware handover animated preview](media/task_videos/four_wx200.gif)](media/task_videos/four_wx200.mp4)
+
+7. **Two arms with a conveyor**
+
+   `examples/6_two_iiwa_conveyor_case.py`
+
+   [![Two arms with a conveyor animated preview](media/task_videos/conveyor.gif)](media/task_videos/conveyor.mp4)
+
+8. **iiwa–Spot handover**
+
+   `examples/7_iiwa_spot_handover_case.py`
+
+   [![iiwa–Spot handover animated preview](media/task_videos/spot_handover.gif)](media/task_videos/spot_handover.mp4)
+
+9. **Alternative destination**
+
+   `examples/4_four_iiwa_rectangular_complex_case2.py`
+
+   [![Alternative destination animated preview](media/task_videos/four_alternative.gif)](media/task_videos/four_alternative.mp4)
+
+10. **Alternative task branch**
+
+   `examples/4_four_iiwa_rectangular_complex_case3.py`
+
+   [![Alternative task branch animated preview](media/task_videos/four_alternative3.gif)](media/task_videos/four_alternative3.mp4)
+
+## Full paper video
+
+[Watch the original video](https://www.youtube.com/watch?v=FPTLGm5iigc). Clip boundaries and source attribution are recorded in the [media manifest](media/task_videos/manifest.json).

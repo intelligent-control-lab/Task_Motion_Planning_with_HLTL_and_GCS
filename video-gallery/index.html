@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Task-by-task clips from Hierarchical Temporal Logic Task and Motion Planning for Multi-Robot Systems.">
+  <title>H-LTL + GCS — Task video gallery</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="clips.js" defer></script>
+  <script src="gallery.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#viewer">Skip to video</a>
+  <header class="topbar">
+    <a class="brand" href="#"><svg viewBox="0 0 40 32" width="40" height="32" aria-hidden="true"><path d="M7 24 20 8 33 24M7 24h26" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="7" cy="24" r="4"/><circle cx="20" cy="8" r="4"/><circle cx="33" cy="24" r="4"/></svg><span>H-LTL <span class="plus">+</span> GCS</span></a>
+    <nav aria-label="Project"><a href="https://github.com/intelligent-control-lab/Task_Motion_Planning_with_HLTL_and_GCS" target="_blank" rel="noreferrer">GitHub repository</a><a href="https://arxiv.org/abs/2504.18899" target="_blank" rel="noreferrer">Read the paper <span aria-hidden="true">↗</span></a></nav>
+  </header>
+  <main>
+    <section class="intro">
+      <p class="eyebrow"><a href="https://www.roboticsproceedings.org/rss21/p099.html" target="_blank" rel="noreferrer">Robotics: Science and Systems (RSS) 2025</a></p>
+      <h1>Hierarchical Temporal Logic Task and Motion Planning for Multi-Robot Systems</h1>
+      <p class="authors">Zhongqi Wei<sup>*</sup> · Xusheng Luo<sup>*</sup> · Changliu Liu</p>
+      <p class="affiliation">Robotics Institute, Carnegie Mellon University <span>·</span> <sup>*</sup>Equal contributions</p>
+    </section>
+    <section class="workspace" aria-label="Task video gallery">
+      <div class="feature" id="viewer">
+        <div class="video-heading"><span class="label" id="clip-kind">Paper footage</span><span class="mono" id="clip-count">01 / 10</span></div>
+        <div class="video-stage"><video id="player" controls playsinline preload="metadata" aria-label="Selected task video"><p>Your browser cannot play this video. Use the MP4 link below.</p></video></div>
+        <div class="playback-bar"><div class="step-buttons"><button id="previous" type="button" aria-label="Previous clip">← <span>Previous</span></button><button id="next" type="button" aria-label="Next clip"><span>Next</span> →</button></div><label class="speed">Viewer speed <select id="speed" aria-label="Viewer playback speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option><option value="2">2×</option></select></label><label class="auto"><input type="checkbox" id="autonext"> Play next</label></div>
+        <div class="clip-info"><div class="clip-title-row"><h2 id="clip-title">Loading task clips…</h2><a id="download" class="download">Open MP4 <span aria-hidden="true">↗</span></a></div><p id="clip-description"></p><a id="code-link" class="code-link"><span>Related example</span><code id="code-name"></code><span aria-hidden="true">↗</span></a><p id="player-message" class="message" role="status" aria-live="polite"></p></div>
+      </div>
+      <aside class="sequence" aria-label="Clip selection"><div class="sequence-heading"><h2>The sequence</h2><span class="mono" id="filtered-count">10 clips</span></div><div class="filters" role="group" aria-label="Filter clips"><button type="button" data-filter="all" aria-pressed="true">All</button><button type="button" data-filter="simulation" aria-pressed="false">Simulation</button><button type="button" data-filter="hardware" aria-pressed="false">Hardware</button></div><ol id="playlist"></ol></aside>
+    </section>
+
+    <noscript><p>Enable JavaScript to use the playlist. The <a href="../README.md#examples">README</a> contains direct MP4 links to every clip.</p></noscript>
+  </main>
+  <footer><span>H-LTL + GCS · Task video gallery</span></footer>
+</body>
+</html>

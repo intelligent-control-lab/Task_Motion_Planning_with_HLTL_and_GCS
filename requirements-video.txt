@@ -1,0 +1,2 @@
+# Encoder for the paper-video extraction script.
+imageio-ffmpeg==0.8.1
